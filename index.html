@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Калькулятор стоимости межевания</title>
+<style>
+  :root { --bg:#f5f7fa; --card:#fff; --ink:#1f2933; --muted:#6b7280; --line:#e5e7eb; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, sans-serif; background:var(--bg); color:var(--ink); }
+  .wrap { max-width:480px; margin:0 auto; padding:24px 16px; }
+  .card { background:var(--card); border-radius:14px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,.06); }
+  h1 { font-size:20px; margin:0 0 4px; }
+  .sub { color:var(--muted); font-size:13px; margin:0 0 20px; }
+  label { display:block; font-weight:600; font-size:14px; margin:16px 0 6px; }
+  input[type=number], input[type=text], select {
+    width:100%; padding:10px 12px; font-size:15px;
+    border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink);
+  }
+  .row { display:flex; gap:8px; }
+  .row label.opt {
+    flex:1; display:flex; align-items:center; gap:8px; font-weight:500;
+    border:1px solid var(--line); border-radius:8px; padding:10px 12px; cursor:pointer; margin:0;
+  }
+  .result { margin-top:24px; border-top:1px solid var(--line); padding-top:16px; }
+  .line { display:flex; justify-content:space-between; font-size:14px; padding:4px 0; color:var(--muted); }
+  .line span:last-child { color:var(--ink); }
+  .total { display:flex; justify-content:space-between; font-size:20px; font-weight:700; margin-top:10px; padding-top:10px; border-top:2px solid var(--ink); }
+  .error { color:#b91c1c; font-size:14px; margin-top:16px; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>Калькулятор стоимости межевания</h1>
+    <p class="sub">Межевая компания · Ленинградская область</p>
+
+    <label for="ares">Площадь участка, соток</label>
+    <input type="text" id="ares" inputmode="decimal" value="10">
+
+    <label>Форма участка</label>
+    <div class="row">
+      <label class="opt"><input type="radio" name="shape" value="rectangular" checked> Прямоугольный</label>
+      <label class="opt"><input type="radio" name="shape" value="irregular"> Неровный</label>
+    </div>
+
+    <label for="zone">Район / удалённость</label>
+    <select id="zone"></select>
+
+    <label>День выезда</label>
+    <div class="row">
+      <label class="opt"><input type="radio" name="day" value="weekday" checked> Будний</label>
+      <label class="opt"><input type="radio" name="day" value="weekend"> Выходной</label>
+    </div>
+
+    <div class="result">
+      <div id="breakdown"></div>
+      <div id="error" class="error hidden"></div>
+      <div class="total" id="totalRow"><span>Итого</span><span id="total">—</span></div>
+    </div>
+  </div>
+</div>
+
+<script src="calc.js"></script>
+<script>
+// CONFIG и calculate доступны глобально из calc.js
+
+// Быстрые селекторы для удобства
+const $ = id => document.getElementById(id);
+
+// Форматирование цены в рубли с символом и локализацией
+const rub = n => n.toLocaleString('ru-RU') + ' ₽';
+
+// Заполняем список зон из CONFIG — без дублирования данных
+const zoneSel = $('zone');
+CONFIG.zones.forEach(z => {
+  const o = document.createElement('option');
+  o.value = z.id;
+  o.textContent = z.label;
+  zoneSel.appendChild(o);
+});
+
+// Собираем данные из формы и преобразуем в объект для calculate()
+function readInput() {
+  return {
+    // Нормализуем десятичную запятую: «10,5» → «10.5»
+    ares: parseFloat($('ares').value.replace(',', '.')),
+    shape: document.querySelector('input[name=shape]:checked').value,
+    zoneId: zoneSel.value,
+    isWeekend: document.querySelector('input[name=day]:checked').value === 'weekend',
+  };
+}
+
+// Пересчитываем результат и обновляем интерфейс
+function render() {
+  const input = readInput();
+  const r = calculate(input);
+  const breakdown = $('breakdown');
+  const errorEl = $('error');
+  const totalRow = $('totalRow');
+
+  // Если ошибка валидации — показываем сообщение, скрываем итог
+  if (!r.valid) {
+    breakdown.innerHTML = '';
+    errorEl.textContent = r.error;
+    errorEl.classList.remove('hidden');
+    totalRow.classList.add('hidden');
+    return;
+  }
+
+  // Иначе скрываем ошибку и показываем детализацию
+  errorEl.classList.add('hidden');
+  totalRow.classList.remove('hidden');
+
+  // Подготавливаем текстовые метки для расшифровки
+  const shapeLabel = input.shape === 'irregular' ? 'неровный' : 'прямоугольный';
+  const zoneLabel = CONFIG.zones.find(z => z.id === input.zoneId).label;
+
+  // Строим строки расшифровки с суммами
+  const rows = [
+    [`Межевание (${input.ares} соток, ${shapeLabel})`, r.survey],
+    [`Выезд (${zoneLabel})`, r.travel],
+  ];
+
+  // Добавляем надбавку за выходной, если есть
+  if (r.weekendFee > 0) rows.push(['Надбавка за выходной', r.weekendFee]);
+
+  // Рендерим HTML строк и обновляем итог
+  breakdown.innerHTML = rows
+    .map(([label, val]) => `<div class="line"><span>${label}</span><span>${rub(val)}</span></div>`)
+    .join('');
+  $('total').textContent = rub(r.total);
+}
+
+// Слушаем изменения всех полей ввода
+document.querySelectorAll('input, select').forEach(el => {
+  el.addEventListener('input', render);
+  el.addEventListener('change', render);
+});
+
+// Первоначальный рендер при загрузке
+render();
+</script>
+</body>
+</html>

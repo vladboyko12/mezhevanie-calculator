@@ -1,0 +1,407 @@
+<title>Калькулятор межевания — Ленинградская область</title>
+<style>
+  :root {
+    --paper:   #E9ECE4;
+    --card:    #FBFCF9;
+    --ink:     #1C2A21;
+    --muted:   #5B6B60;
+    --faint:   #7E8C82;
+    --line:    #D3D9CC;
+    --line-2:  #E2E6DB;
+    --field:   #FFFFFF;
+    --accent:  #B26A22;
+    --accent-ink: #8F5316;
+    --accent-tint: #F3E7D6;
+    --danger:  #A8422C;
+    --good:    #3B6B4E;
+    --radius:  14px;
+    --shadow:  0 1px 2px rgba(28,42,33,.05), 0 10px 30px -12px rgba(28,42,33,.18);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:   #10140E;
+      --card:    #191E16;
+      --ink:     #E9EDE3;
+      --muted:   #9BA795;
+      --faint:   #77836F;
+      --line:    #2A3125;
+      --line-2:  #232a1f;
+      --field:   #12160F;
+      --accent:  #D68E45;
+      --accent-ink: #E7A863;
+      --accent-tint: #2A2115;
+      --danger:  #E0876C;
+      --good:    #6FB089;
+      --shadow:  0 1px 2px rgba(0,0,0,.4), 0 14px 34px -14px rgba(0,0,0,.65);
+    }
+  }
+  :root[data-theme="light"] {
+    --paper:#E9ECE4; --card:#FBFCF9; --ink:#1C2A21; --muted:#5B6B60; --faint:#7E8C82;
+    --line:#D3D9CC; --line-2:#E2E6DB; --field:#FFFFFF; --accent:#B26A22; --accent-ink:#8F5316;
+    --accent-tint:#F3E7D6; --danger:#A8422C; --good:#3B6B4E;
+    --shadow:0 1px 2px rgba(28,42,33,.05), 0 10px 30px -12px rgba(28,42,33,.18);
+  }
+  :root[data-theme="dark"] {
+    --paper:#10140E; --card:#191E16; --ink:#E9EDE3; --muted:#9BA795; --faint:#77836F;
+    --line:#2A3125; --line-2:#232a1f; --field:#12160F; --accent:#D68E45; --accent-ink:#E7A863;
+    --accent-tint:#2A2115; --danger:#E0876C; --good:#6FB089;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 14px 34px -14px rgba(0,0,0,.65);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: clamp(16px, 5vw, 56px) 16px;
+  }
+  .mono { font-family: ui-monospace, "Cascadia Code", "Consolas", "SFMono-Regular", monospace; font-variant-numeric: tabular-nums; }
+
+  .sheet {
+    width: 100%;
+    max-width: 520px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  /* Шапка с топографическими горизонталями */
+  .head {
+    position: relative;
+    padding: 26px 28px 22px;
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .head canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .5; pointer-events: none; }
+  .head > * { position: relative; }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    font-weight: 600;
+    margin: 0 0 8px;
+  }
+  h1 {
+    font-size: clamp(22px, 5vw, 27px);
+    line-height: 1.15;
+    letter-spacing: -.01em;
+    text-wrap: balance;
+    margin: 0;
+    font-weight: 700;
+  }
+  .head .sub { margin: 8px 0 0; color: var(--muted); font-size: 13.5px; max-width: 42ch; }
+
+  .body { padding: 22px 28px 8px; }
+
+  .field { margin-bottom: 20px; }
+  .flabel {
+    display: block;
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--faint);
+    margin-bottom: 9px;
+  }
+
+  .num-wrap { position: relative; display: flex; align-items: center; }
+  input[type="text"] {
+    width: 100%;
+    padding: 13px 60px 13px 14px;
+    font-size: 17px;
+    font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    background: var(--field);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-tint);
+  }
+  .unit {
+    position: absolute;
+    right: 14px;
+    color: var(--faint);
+    font-size: 13px;
+    pointer-events: none;
+  }
+
+  /* Сегментированные переключатели */
+  .seg { display: flex; gap: 6px; background: var(--line-2); padding: 4px; border-radius: 11px; }
+  .seg label {
+    flex: 1;
+    position: relative;
+    text-align: center;
+    padding: 9px 8px;
+    font-size: 14px;
+    font-weight: 550;
+    color: var(--muted);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: color .15s, background .15s, box-shadow .15s;
+    user-select: none;
+  }
+  .seg input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .seg label:has(input:checked) {
+    background: var(--card);
+    color: var(--ink);
+    box-shadow: 0 1px 2px rgba(0,0,0,.12);
+  }
+  .seg label:has(input:focus-visible) { box-shadow: 0 0 0 2px var(--accent); }
+
+  select {
+    width: 100%;
+    padding: 13px 40px 13px 14px;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--field);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237E8C82' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 13px center;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-tint); }
+
+  /* Смета */
+  .estimate {
+    margin: 4px 28px 0;
+    border-top: 1px dashed var(--line);
+    padding: 18px 0 6px;
+  }
+  .line { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 6px 0; }
+  .line .lab { color: var(--muted); font-size: 14px; }
+  .line .val { font-size: 15px; color: var(--ink); white-space: nowrap; }
+  .total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: 12px;
+    padding-top: 14px;
+    border-top: 1.5px solid var(--ink);
+  }
+  .total .lab { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; color: var(--faint); }
+  .total .val { font-size: 30px; font-weight: 700; color: var(--accent-ink); letter-spacing: -.01em; }
+
+  .error {
+    margin: 4px 28px 0;
+    padding: 14px 16px;
+    background: var(--accent-tint);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--danger);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .note {
+    padding: 16px 28px 24px;
+    color: var(--faint);
+    font-size: 12px;
+    line-height: 1.5;
+    border-top: 1px solid var(--line-2);
+    margin-top: 16px;
+  }
+  .hidden { display: none; }
+</style>
+
+<main class="sheet">
+  <header class="head">
+    <canvas id="contours" aria-hidden="true"></canvas>
+    <p class="eyebrow">Ленинградская область · выезд инженера</p>
+    <h1>Калькулятор стоимости межевания</h1>
+    <p class="sub">Предварительный расчёт по площади участка, его форме и удалённости выезда.</p>
+  </header>
+
+  <div class="body">
+    <div class="field">
+      <label class="flabel" for="ares">Площадь участка</label>
+      <div class="num-wrap">
+        <input type="text" id="ares" inputmode="decimal" value="10" autocomplete="off" aria-describedby="ares-unit">
+        <span class="unit" id="ares-unit">соток</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="flabel">Форма участка</span>
+      <div class="seg" role="radiogroup" aria-label="Форма участка">
+        <label><input type="radio" name="shape" value="rectangular" checked> Прямоугольный</label>
+        <label><input type="radio" name="shape" value="irregular"> Неровный</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="flabel" for="zone">Район · удалённость выезда</label>
+      <select id="zone"></select>
+    </div>
+
+    <div class="field">
+      <span class="flabel">День выезда</span>
+      <div class="seg" role="radiogroup" aria-label="День выезда">
+        <label><input type="radio" name="day" value="weekday" checked> Будний</label>
+        <label><input type="radio" name="day" value="weekend"> Выходной</label>
+      </div>
+    </div>
+  </div>
+
+  <div id="estimate" class="estimate">
+    <div id="breakdown"></div>
+    <div class="total" id="totalRow">
+      <span class="lab">Итого</span>
+      <span class="val mono" id="total">—</span>
+    </div>
+  </div>
+  <div id="error" class="error hidden"></div>
+
+  <p class="note">Расчёт предварительный. Точную стоимость и сроки подтвердит кадастровый инженер после осмотра документов на участок.</p>
+</main>
+
+<script>
+// ── Тарифы и логика расчёта ────────────────────────────────────────────
+// Все цены собраны в CONFIG — правятся здесь, без изменения остального кода.
+const CONFIG = {
+  base: 8000,             // базовая стоимость: оформление, документы
+  perAre: 500,            // цена за одну сотку
+  shapeMultiplier: {
+    rectangular: 1.0,     // прямоугольный участок
+    irregular:   1.2,     // неровный участок (сложнее замер)
+  },
+  weekendSurcharge: 1000, // надбавка за выезд в выходной
+  zones: [
+    { id: 'z1', label: 'До 30 км',  price: 1500 },
+    { id: 'z2', label: '30–60 км',  price: 3000 },
+    { id: 'z3', label: '60–100 км', price: 5000 },
+    { id: 'z4', label: '100+ км',   price: 7000 },
+  ],
+};
+
+function calculate(input) {
+  const { ares, shape, zoneId, isWeekend } = input;
+  const zone = CONFIG.zones.find(z => z.id === zoneId);
+  const multiplier = CONFIG.shapeMultiplier[shape];
+  const empty = { survey: 0, travel: 0, weekendFee: 0, total: 0 };
+
+  if (typeof ares !== 'number' || !isFinite(ares) || ares <= 0) {
+    return { ...empty, valid: false, error: 'Укажите площадь участка больше нуля' };
+  }
+  if (!zone) { return { ...empty, valid: false, error: 'Выберите район выезда' }; }
+  if (multiplier === undefined) { return { ...empty, valid: false, error: 'Выберите форму участка' }; }
+
+  const survey = Math.round((CONFIG.base + CONFIG.perAre * ares) * multiplier);
+  const weekendFee = isWeekend ? CONFIG.weekendSurcharge : 0;
+  const travel = zone.price;
+  const total = survey + travel + weekendFee;
+  return { survey, travel, weekendFee, total, valid: true };
+}
+
+// ── Интерфейс ──────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const rub = n => n.toLocaleString('ru-RU') + ' ₽';
+
+// Список зон строится из CONFIG — без дублирования данных
+const zoneSel = $('zone');
+CONFIG.zones.forEach(z => {
+  const o = document.createElement('option');
+  o.value = z.id; o.textContent = z.label;
+  zoneSel.appendChild(o);
+});
+
+function readInput() {
+  return {
+    // Нормализуем десятичную запятую: «10,5» → «10.5»
+    ares: parseFloat($('ares').value.replace(',', '.')),
+    shape: document.querySelector('input[name=shape]:checked').value,
+    zoneId: zoneSel.value,
+    isWeekend: document.querySelector('input[name=day]:checked').value === 'weekend',
+  };
+}
+
+function render() {
+  const input = readInput();
+  const r = calculate(input);
+  const estimate = $('estimate');
+  const errorEl = $('error');
+
+  if (!r.valid) {
+    estimate.classList.add('hidden');
+    errorEl.textContent = r.error;
+    errorEl.classList.remove('hidden');
+    return;
+  }
+  estimate.classList.remove('hidden');
+  errorEl.classList.add('hidden');
+
+  const shapeLabel = input.shape === 'irregular' ? 'неровный' : 'прямоугольный';
+  const zoneLabel = CONFIG.zones.find(z => z.id === input.zoneId).label;
+  const aresText = input.ares.toLocaleString('ru-RU');
+  const rows = [
+    [`Межевание · ${aresText} соток, ${shapeLabel}`, r.survey],
+    [`Выезд · ${zoneLabel}`, r.travel],
+  ];
+  if (r.weekendFee > 0) rows.push(['Надбавка за выходной день', r.weekendFee]);
+
+  $('breakdown').innerHTML = rows.map(([lab, val]) =>
+    `<div class="line"><span class="lab">${lab}</span><span class="val mono">${rub(val)}</span></div>`
+  ).join('');
+  $('total').textContent = rub(r.total);
+}
+
+document.querySelectorAll('input, select').forEach(el => {
+  el.addEventListener('input', render);
+  el.addEventListener('change', render);
+});
+render();
+
+// ── Фоновые горизонтали в шапке (топографический мотив) ────────────────
+(function drawContours() {
+  const canvas = $('contours');
+  const ctx = canvas.getContext('2d');
+  function paint() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.width = Math.max(1, rect.width * dpr);
+    const h = canvas.height = Math.max(1, rect.height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, rect.width, rect.height);
+    const stroke = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#B26A22';
+    ctx.strokeStyle = stroke;
+    ctx.globalAlpha = 0.16;
+    ctx.lineWidth = 1;
+    // Вложенные волнистые контуры — как горизонтали на топоплане
+    const cx = rect.width * 0.82, cy = rect.height * 0.5;
+    for (let ring = 1; ring <= 9; ring++) {
+      const rad = ring * 15;
+      ctx.beginPath();
+      for (let a = 0; a <= Math.PI * 2 + 0.01; a += 0.12) {
+        const wob = Math.sin(a * 3 + ring) * 4 + Math.cos(a * 2 - ring) * 3;
+        const x = cx + Math.cos(a) * (rad + wob);
+        const y = cy + Math.sin(a) * (rad * 0.72 + wob);
+        a === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+  }
+  paint();
+  window.addEventListener('resize', paint);
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  mq.addEventListener && mq.addEventListener('change', paint);
+})();
+</script>
