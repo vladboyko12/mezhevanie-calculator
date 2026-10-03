@@ -24,7 +24,11 @@ from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.pens.t2CharStringPen import T2CharStringPen
 from fontTools.feaLib.builder import addOpenTypeFeaturesFromString
 
-from build_kapelka import ln, arc, P, leaf_poly, draw, polys_of
+from shapely.geometry.polygon import orient
+from fontTools.pens.cu2quPen import Cu2QuPen
+
+from build_kapelka import ln, arc, P, leaf_poly, polys_of
+from bezier_fit import draw_ring
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FAMILY = "Gryadka"
@@ -73,14 +77,15 @@ def oval_arc(x0, y0, x1, y1, a0, a1):
     return out
 
 
-def rbowl(xl, ytop, ybot, xr):
-    """Правая чаша: от (xl,ytop) вправо, скруглённо вниз, обратно к (xl,ybot)."""
-    r = min((ytop - ybot) / 2, xr - xl)
+def rbowl(xl, ytop, ybot, xr, xb=None):
+    """Правая чаша: от (xl,ytop) вправо, скруглённо вниз, обратно к (xb,ybot)."""
+    xb = xl if xb is None else xb
+    r = min((ytop - ybot) / 2, xr - max(xl, xb))
     return P(ln((xl, ytop), (xr - r, ytop)),
              arc(xr - r, ytop - r, r, r, 90, 0),
              ln((xr, ytop - r), (xr, ybot + r)),
              arc(xr - r, ybot + r, r, r, 0, -90),
-             ln((xr - r, ybot), (xl, ybot)))
+             ln((xr - r, ybot), (xb, ybot)))
 
 
 def lbowl(xr, ytop, ybot, xl):
@@ -365,8 +370,14 @@ LAT = [
 LOW_SPECIAL = {"а": a_low, "a": a_low, "е": e_low, "e": e_low}
 
 
+def cw(w):
+    """Компенсация ширины: у жирного начертания буквы шире, чтобы не забивались просветы."""
+    return w + (R - 60) * (1.3 if w >= 600 else 1.9)
+
+
 def with_leaves(g, xs, y=815, k=1.6):
     g = dict(g)
+    k *= (R / 60) ** 0.45
     g["leaves"] = g["leaves"] + [(x, y, 40, k) for x in xs]
     return g
 
@@ -380,38 +391,41 @@ def breve(g, w):
 def build_letters():
     out = {}   # char -> glyph spec
     for up, low, fn, ww, nw in CYR + LAT:
-        out[up] = fn(ww)
-        out[low] = LOW_SPECIAL.get(low, fn)(nw)
+        out[up] = fn(cw(ww))
+        out[low] = LOW_SPECIAL.get(low, fn)(cw(nw))
     # диакритика
-    out["Ё"] = with_leaves(E_(680), [210, 480])
-    out["ё"] = with_leaves(e_low(380), [105, 290], k=1.3)
-    out["Й"] = breve(I_(800), 800)
-    out["й"] = breve(I_(440), 440)
-    out["i"] = with_leaves(I_lat(120), [60], y=825, k=1.35)
-    out["j"] = with_leaves(J_lat(380), [320], y=825, k=1.35)
+    we, ne = cw(680), cw(380)
+    out["Ё"] = with_leaves(E_(we), [we * 0.31, we * 0.7])
+    out["ё"] = with_leaves(e_low(ne), [ne * 0.28, ne * 0.76], k=1.3)
+    out["Й"] = breve(I_(cw(800)), cw(800))
+    out["й"] = breve(I_(cw(440)), cw(440))
+    out["i"] = with_leaves(I_lat(120), [R], y=825, k=1.35)
+    out["j"] = with_leaves(J_lat(cw(380)), [cw(380) - R], y=825, k=1.35)
     return out
 
 
 # ---------------------------------------------------------------- цифры и знаки
 
 def digits():
-    w = 470
+    """Табличные цифры: у всех одинаковая ширина — удобно для ценников."""
+    w = cw(480)
     x1 = w - R
     d = {}
     d["0"] = G([oval(R, B, x1, T)])
-    d["1"] = G([ln((w * 0.62, 0), (w * 0.62, CH)), ln((R, 470), (w * 0.62, CH))])
-    d["2"] = G([P(oval_arc(R, 330, x1, T, 175, -15), ln((x1 - 5, 420), (R, B)), ln((R, B), (w, B)))])
-    d["3"] = Ze_(w)
+    xs = w * 0.62
+    d["1"] = G([ln((xs, 0), (xs, CH)), ln((R + 10, 480), (xs, CH))])
+    top2 = oval_arc(R, 300, x1, T, 168, -40)
+    d["2"] = G([P(top2, ln(top2[-1], (R, B)), ln((R, B), (w, B)))])
+    d["3"] = G([P(ln((30, T), (x1, T), (w * 0.4, 430)), rbowl(w * 0.4, 430, B, x1, xb=30))])
     d["4"] = G([ln((w * 0.68, 0), (w * 0.68, CH)), ln((w * 0.68, CH), (20, 230), (w, 230))])
-    d["5"] = G([P(ln((x1 + 20, T), (R + 10, T)), ln((R + 10, T), (R, 390))),
-                rbowl(R, 390, B, x1)])
-    d["6"] = G([oval(R, B, x1, 430), P(ln((R, 245), (R, T - 120)), arc(R + 120, T - 120, 120, 120, 180, 90),
-                                         ln((R + 120, T), (x1, T)))])
-    d["7"] = G([ln((30, T), (x1, T), (w * 0.3, 0))])
-    d["8"] = G([oval(R + 20, M, x1 - 20, T), oval(R, B, x1, M)])
-    six = d["6"]
-    d["9"] = G([[(w - x, CH - y) for x, y in s] for s in six["strokes"]])
-    return {k: (v, w) for k, v in d.items()}
+    d["5"] = G([P(ln((x1 + 20, T), (R, T), (R, 410)), rbowl(R, 410, B, x1, xb=30))])
+    r6 = 150
+    d["6"] = G([oval(R, B, x1, 450), P(ln((R, 255), (R, T - r6)), arc(R + r6, T - r6, r6, r6, 180, 90),
+                                         ln((R + r6, T), (x1, T)))])
+    d["7"] = G([ln((30, T), (x1, T), (w * 0.32, 0))])
+    d["8"] = G([oval(R + 25, M, x1 - 25, T), oval(R, B, x1, M)])
+    d["9"] = G([[(w - x, CH - y) for x, y in s] for s in d["6"]["strokes"]])
+    return d, w
 
 
 def punct():
@@ -495,7 +509,7 @@ def render(spec):
     extra += [leaf_poly(x, y, a, k) for x, y, a, k in spec["leaves"]]
     if extra:
         shape = unary_union([shape] + extra)
-    return shape.simplify(0.6, preserve_topology=True)
+    return shape
 
 
 def gname(ch):
@@ -552,25 +566,54 @@ def kerning(shapes, target=2 * SB, tighten=0.5, kmin=-140, kmax=50):
 
 # ---------------------------------------------------------------- сборка
 
-def main():
+WEIGHTS = [
+    # стиль,    полуширина штриха, мягкие углы, отступ, usWeightClass
+    ("Light",   32, 10, 44, 300),
+    ("Regular", 60, 16, 48, 400),
+    ("Black",   88, 20, 52, 900),
+]
+
+
+def set_weight(r, soft, sb):
+    global R, T, B, SOFT, SB
+    R, SOFT, SB = r, soft, sb
+    T, B = CH - R, R
+
+
+def draw_curves(shape, pen, shift, fmt):
+    """Контуры — кривыми Безье. TTF: внешний контур по часовой, OTF — против."""
+    sign = -1.0 if fmt == "ttf" else 1.0
+    for poly in polys_of(shape):
+        poly = orient(poly, sign=sign)
+        for ring in [poly.exterior] + list(poly.interiors):
+            draw_ring(list(ring.coords)[:-1], pen, shift)
+
+
+def build_weight(style, r, soft, sb, wclass):
+    set_weight(r, soft, sb)
     specs = build_letters()
-    for k, (v, _) in digits().items():
-        specs[k] = v
+    dig, dw = digits()
     specs.update(punct())
 
     shapes, cmap = {}, {}
-    for ch, spec in specs.items():
+    for ch, spec in list(specs.items()) + list(dig.items()):
         name = gname(ch)
         shape = render(spec)
         minx, _, maxx, _ = shape.bounds
-        shift = -minx + SB
-        adv = int(round(maxx - minx + 2 * SB))
+        if ch in dig:                     # табличные цифры: общая ширина, знак по центру
+            adv = int(round(dw + 2 * SB))
+            shift = (adv - (maxx - minx)) / 2 - minx
+        else:
+            shift = -minx + SB
+            adv = int(round(maxx - minx + 2 * SB))
         shapes[name] = (shape, shift, adv)
         cmap[ord(ch)] = name
     cmap[0x20] = "space"
     cmap[0xA0] = "uni00A0"
+    space = int(round(240 + 1.2 * R))
 
-    kern_fea = kerning(shapes)
+    kern_names = {n: v for n, v in shapes.items() if n not in {gname(c) for c in dig}}
+    kern_fea = kerning(kern_names, target=2 * SB)
     order = [".notdef", "space", "uni00A0"] + list(shapes)
 
     upper = [gname(u) for u, *_ in CYR + LAT] + ["uni0401", "uni0419"]
@@ -585,80 +628,110 @@ feature ss01 {{ featureNames {{ name "Wide lowercase"; }}; sub @lower by @upper;
 feature ss02 {{ featureNames {{ name "Narrow capitals"; }}; sub @upper by @lower; }} ss02;
 {kern_fea}
 """
-
+    ps = f"{FAMILY}-{style}"
     for fmt in ("ttf", "otf"):
         fb = FontBuilder(UPM, isTTF=(fmt == "ttf"))
         fb.setupGlyphOrder(order)
         fb.setupCharacterMap(cmap)
-        metrics = {".notdef": (500, 50), "space": (280, 0), "uni00A0": (280, 0)}
+        metrics = {".notdef": (500, 50), "space": (space, 0), "uni00A0": (space, 0)}
         glyphs = {}
 
         def newpen(adv):
-            return TTGlyphPen(None) if fmt == "ttf" else T2CharStringPen(adv, None)
+            if fmt == "ttf":
+                tt = TTGlyphPen(None)
+                return tt, Cu2QuPen(tt, max_err=0.6, reverse_direction=False)
+            t2 = T2CharStringPen(adv, None)
+            return t2, t2
 
-        def done(pen):
-            return pen.glyph() if fmt == "ttf" else pen.getCharString()
+        def done(base):
+            return base.glyph() if fmt == "ttf" else base.getCharString()
 
-        pen = newpen(500)
+        base, pen = newpen(500)
         for rect in ([(50, 0), (50, 700), (450, 700), (450, 0)], [(110, 60), (390, 60), (390, 640), (110, 640)]):
+            if fmt == "otf":
+                rect = rect[::-1]
             pen.moveTo(rect[0])
             for pt in rect[1:]:
                 pen.lineTo(pt)
             pen.closePath()
-        glyphs[".notdef"] = done(pen)
-        glyphs["space"] = done(newpen(280))
-        glyphs["uni00A0"] = done(newpen(280))
+        glyphs[".notdef"] = done(base)
+        for sp in ("space", "uni00A0"):
+            base, _ = newpen(space)
+            glyphs[sp] = done(base)
         for name, (shape, shift, adv) in shapes.items():
-            pen = newpen(adv)
-            draw(shape, pen, shift)
-            glyphs[name] = done(pen)
+            base, pen = newpen(adv)
+            draw_curves(shape, pen, shift, fmt)
+            glyphs[name] = done(base)
             metrics[name] = (adv, int(round(shape.bounds[0] + shift)))
 
         if fmt == "ttf":
             fb.setupGlyf(glyphs)
+            glyf = fb.font["glyf"]
+            for name in shapes:
+                g = glyf[name]
+                g.recalcBounds(glyf)
+                metrics[name] = (metrics[name][0], g.xMin)
         else:
-            fb.setupCFF(FAMILY + "-Regular", {"FullName": FAMILY + " Regular"}, glyphs, {})
+            fb.setupCFF(ps, {"FullName": f"{FAMILY} {style}"}, glyphs, {})
         fb.setupHorizontalMetrics(metrics)
         fb.setupHorizontalHeader(ascent=950, descent=-250)
-        fb.setupNameTable({
-            "familyName": FAMILY, "styleName": "Regular",
-            "uniqueFontIdentifier": f"{FAMILY}-Regular-1.000",
-            "fullName": f"{FAMILY} Regular", "psName": f"{FAMILY}-Regular",
-            "version": "Version 1.000", "designer": "Kapelka project",
+        names = {
+            "familyName": FAMILY if style == "Regular" else f"{FAMILY} {style}",
+            "styleName": "Regular",
+            "typographicFamily": FAMILY, "typographicSubfamily": style,
+            "uniqueFontIdentifier": f"{ps}-2.000",
+            "fullName": f"{FAMILY} {style}", "psName": ps,
+            "version": "Version 2.000", "designer": "Kapelka project",
             "description": "Плакатный геометрический гротеск: широкие прописные, узкие капительные строчные, мягкие углы, листики.",
             "licenseDescription": "Free for personal and commercial use.",
-        })
+        }
+        fb.setupNameTable(names)
         fb.setupOS2(sTypoAscender=800, sTypoDescender=-200, sTypoLineGap=200,
                     usWinAscent=950, usWinDescent=250, sxHeight=CH, sCapHeight=CH,
-                    achVendID="KPLK", fsType=0, usWeightClass=700,
+                    achVendID="KPLK", fsType=0, usWeightClass=wclass,
+                    version=4, fsSelection=(0x40 if style == "Regular" else 0) | 0x80,
                     ulUnicodeRange1=(1 << 0) | (1 << 1) | (1 << 9), ulCodePageRange1=(1 << 0) | (1 << 2))
         fb.setupPost()
         addOpenTypeFeaturesFromString(fb.font, fea)
-        out = os.path.join(HERE, f"{FAMILY}-Regular.{fmt}")
+        out = os.path.join(HERE, f"{ps}.{fmt}")
         fb.save(out)
         print("saved", out, len(order), "glyphs")
+
+
+def main():
+    for w in WEIGHTS:
+        build_weight(*w)
     specimen()
 
 
 def specimen():
     from PIL import Image, ImageDraw, ImageFont
-    path = os.path.join(HERE, f"{FAMILY}-Regular.otf")
 
-    def F(s, **kw):
-        return ImageFont.truetype(path, s, layout_engine=ImageFont.Layout.RAQM)
-    img = Image.new("RGB", (1900, 1300), (250, 248, 240))
+    def F(style, s):
+        return ImageFont.truetype(os.path.join(HERE, f"{FAMILY}-{style}.otf"), s,
+                                  layout_engine=ImageFont.Layout.RAQM)
+    img = Image.new("RGB", (1900, 1640), (250, 248, 240))
     d = ImageDraw.Draw(img)
-    green, ink = (40, 120, 60), (30, 35, 30)
+    green, ink, grey = (40, 120, 60), (30, 35, 30), (120, 120, 110)
+    lab = F("Regular", 34)
     y = 30
-    d.text((60, y), "ГРЯДКА грядка", font=F(150), fill=green); y += 210
-    for line, s in [("АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ", 50), ("абвгдеёжзийклмнопрстуфхцчшщъыьэюя", 62),
-                    ("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 50), ("abcdefghijklmnopqrstuvwxyz", 62),
-                    ("0123456789 .,:;!?-–— «»()[]/+=*%№@&#…₽", 58)]:
-        d.text((60, y), line, font=F(s), fill=ink); y += 105
-    y += 20
-    d.text((60, y), "Свежие овощи с грядки!", font=F(100), fill=green); y += 140
-    d.text((60, y), "ВКУСНО и полезно", font=F(100), fill=ink); y += 140
-    d.text((60, y), "Хлеб «Домашний» — 99,90 ₽", font=F(84), fill=ink)
+    for style, _, *__ in WEIGHTS:
+        d.text((60, y + 30), style, font=lab, fill=grey)
+        d.text((300, y), "ГРЯДКА грядка 2025", font=F(style, 120), fill=green if style == "Black" else ink)
+        y += 170
+    y += 10
+    for style, _, *__ in WEIGHTS:
+        d.text((60, y + 10), style, font=lab, fill=grey)
+        d.text((300, y), "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ", font=F(style, 40), fill=ink)
+        d.text((300, y + 70), "абвгдеёжзийклмнопрстуфхцчшщъыьэюя  0123456789", font=F(style, 50), fill=ink)
+        y += 170
+    y += 10
+    d.text((60, y), "Цифры", font=lab, fill=grey)
+    for i, style in enumerate(("Light", "Regular", "Black")):
+        d.text((300, y + i * 95), "0123456789  99,90 ₽", font=F(style, 80), fill=ink)
+    y += 300
+    d.text((60, y), "СВЕЖИЕ ОВОЩИ", font=F("Black", 110), fill=green)
+    d.text((60, y + 140), "с грядки — каждый день", font=F("Light", 80), fill=ink)
     img.save(os.path.join(HERE, "gryadka-specimen.png"))
     print("saved specimen")
 
