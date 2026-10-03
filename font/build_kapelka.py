@@ -254,44 +254,63 @@ cy["Я"] = G([ln((370, 0), (370, CH)),
 # ---------------------------------------------------------------- кириллица: строчные
 
 
-def small(gl, sx=0.86):
-    return tf(gl, sx, XH / CH)
+def tail(x, y=60):
+    """Правая ножка с маленьким хвостиком вправо (как у a и q)."""
+    return bz((x, y), (x, 0), (x + 30, -5), (x + 70, 20))
 
+
+soft_l = [ln((0, 290), (150, 290)), bz((150, 290), (320, 290), (320, 0), (150, 0)), ln((150, 0), (0, 0))]
 
 cyl = {}
 cyl["а"] = g["a"]
-cyl["б"] = G([arc(200, 230, 200, 230, 0, 360), bz((35, 340), (60, 640), (200, 690), (380, 740))])
-cyl["в"] = small(g["B"], 0.9)
-cyl["г"] = small(cy["Г"], 0.85)
-cyl["д"] = small(cy["Д"], 0.82)
+cyl["б"] = G([arc(200, 225, 200, 225, 0, 360),
+             bz((25, 330), (40, 620), (190, 690), (390, 735))])
+cyl["в"] = G([ln((0, 0), (0, 500)),
+             P(ln((0, 500), (140, 500)), bz((140, 500), (285, 500), (285, 275), (140, 275)), ln((140, 275), (0, 275))),
+             P(ln((0, 275), (160, 275)), bz((160, 275), (325, 275), (325, 0), (160, 0)), ln((160, 0), (0, 0)))])
+cyl["г"] = G([P(ln((0, 0), (0, 500), (220, 500)), bz((220, 500), (250, 500), (275, 490), (290, 465)))])
+cyl["д"] = G([P(ln((0, -140), (0, 0), (420, 0), (420, -140))),
+             P(bz((45, 0), (110, 140), (125, 330), (125, 500)), ln((125, 500), (355, 500), (355, 0)))])
 cyl["е"] = g["e"]
-cyl["ё"] = add(g["e"], leaf(110, 660, 40), leaf(280, 660, 40))
-cyl["ж"] = small(cy["Ж"], 0.85)
-cyl["з"] = small(cy["З"], 0.88)
-cyl["и"] = small(cy["И"], 0.85)
-cyl["й"] = add(cyl["и"], G([arc(187, 655, 100, 70, 200, 340)]))
-cyl["к"] = small(g["K"], 0.85)
-cyl["л"] = small(cy["Л"], 0.85)
-cyl["м"] = small(g["M"], 0.85)
-cyl["н"] = small(g["H"], 0.85)
+cyl["ё"] = add(g["e"], leaf(105, 675, 40), leaf(285, 675, 40))
+cyl["ж"] = G([ln((265, 0), (265, 500)),
+             P(bz((20, 500), (90, 440), (180, 260), (265, 255)), bz((265, 255), (170, 250), (60, 90), (0, 0))),
+             P(bz((510, 500), (440, 440), (350, 260), (265, 255)), bz((265, 255), (360, 250), (470, 90), (530, 0)))])
+cyl["з"] = G([P(bz((10, 410), (50, 530), (300, 525), (295, 385)),
+                bz((295, 385), (290, 295), (190, 275), (130, 275)),
+                bz((130, 275), (330, 275), (345, 125), (290, 55)),
+                bz((290, 55), (220, -25), (45, -20), (0, 75)))])
+cyl["и"] = G([P(ln((0, 500), (0, 0), (350, 500), (350, 60)), tail(350))])
+cyl["й"] = add(cyl["и"], G([arc(175, 660, 105, 75, 200, 340)]))
+cyl["к"] = G([ln((0, 0), (0, 500)), bz((300, 500), (220, 440), (120, 270), (0, 255)),
+             P(bz((40, 262), (160, 255), (220, 100), (330, 0)))])
+cyl["л"] = G([P(bz((0, 0), (100, 10), (125, 250), (125, 500)), ln((125, 500), (365, 500), (365, 60)), tail(365))])
+cyl["м"] = G([ln((0, 0), (35, 500), (235, 130), (435, 500), (470, 0))])
+cyl["н"] = G([ln((0, 0), (0, 500)), P(ln((345, 500), (345, 60)), tail(345)), ln((0, 260), (345, 260))])
 cyl["о"] = g["o"]
-cyl["п"] = small(cy["П"], 0.85)
+cyl["п"] = G([ln((0, 0), (0, 500)),
+             P(bz((0, 440), (40, 500), (90, 500), (150, 500)), ln((150, 500), (250, 500)),
+               bz((250, 500), (320, 500), (345, 470), (345, 400)), ln((345, 400), (345, 0)))])
 cyl["р"] = g["p"]
 cyl["с"] = g["c"]
-cyl["т"] = small(g["T"], 0.85)
+cyl["т"] = G([ln((0, 500), (420, 500)), ln((210, 500), (210, 0))])
 cyl["у"] = g["y"]
 cyl["ф"] = G([ln((230, ASC), (230, DSC)), arc(230, 250, 230, 230, 90, 450)])
 cyl["х"] = g["x"]
-cyl["ц"] = small(cy["Ц"], 0.85)
-cyl["ч"] = small(cy["Ч"], 0.85)
-cyl["ш"] = small(cy["Ш"], 0.82)
-cyl["щ"] = small(cy["Щ"], 0.82)
-cyl["ъ"] = small(cy["Ъ"], 0.85)
-cyl["ы"] = small(cy["Ы"], 0.82)
-cyl["ь"] = small(cy["Ь"], 0.85)
-cyl["э"] = small(cy["Э"], 0.82)
-cyl["ю"] = small(cy["Ю"], 0.82)
-cyl["я"] = small(cy["Я"], 0.85)
+cyl["ц"] = G([ln((0, 500), (0, 0), (355, 0)), ln((355, 500), (355, 0), (415, 0), (415, -135))])
+cyl["ч"] = G([P(ln((0, 500), (0, 330)), bz((0, 330), (0, 200), (150, 185), (325, 235))),
+             P(ln((325, 500), (325, 60)), tail(325))])
+cyl["ш"] = G([ln((0, 500), (0, 0), (510, 0), (510, 500)), ln((255, 500), (255, 0))])
+cyl["щ"] = G([ln((0, 500), (0, 0), (510, 0)), ln((510, 500), (510, 0), (570, 0), (570, -135)),
+             ln((255, 500), (255, 0))])
+cyl["ь"] = G([ln((0, 500), (0, 0)), P(*soft_l)])
+cyl["ъ"] = add(tf(cyl["ь"], 1, 1, 115, 0), G([ln((0, 500), (115, 500))]))
+cyl["ы"] = add(cyl["ь"], G([ln((440, 500), (440, 0))]))
+cyl["э"] = G([arc(200, 250, 200, 250, 140, -140), ln((95, 255), (395, 255))])
+cyl["ю"] = G([ln((0, 0), (0, 500)), ln((0, 255), (125, 255)), arc(320, 250, 195, 250, 90, 450)])
+cyl["я"] = G([ln((335, 0), (335, 500)),
+             P(ln((335, 500), (175, 500)), bz((175, 500), (15, 500), (15, 225), (175, 225)), ln((175, 225), (335, 225))),
+             bz((185, 225), (110, 200), (40, 90), (0, 0))])
 
 # ---------------------------------------------------------------- знаки
 
@@ -458,6 +477,76 @@ def gname(ch):
     return f"uni{cp:04X}"
 
 
+KERN_TARGET = 2 * SB      # «нормальный» просвет, как между двумя вертикальными штрихами
+KERN_TIGHTEN = 0.55       # какую долю лишнего просвета убирать
+KERN_MIN, KERN_MAX = -130, 50
+KERN_STEP = 20            # шаг профиля по высоте
+KERN_BLUR = 2             # учитывать соседние строки (±40 ед.) для диагоналей и округлостей
+
+
+def kerning(shapes, letters):
+    """Автокернинг по профилям: для каждой пары меряем минимальный
+    просвет между реальными контурами и подтягиваем его к KERN_TARGET.
+    Альтернативы букв кернятся тем же классом, что и основная форма."""
+    from shapely.geometry import box
+    ys = list(range(-260, 960, KERN_STEP))
+    bases = [n for n in shapes if "." not in n]
+    prof = {}
+    for n in bases:
+        shape, shift, adv = shapes[n]
+        minx, _, maxx, _ = shape.bounds
+        left, right = [], []
+        for y in ys:
+            part = shape.intersection(box(minx - 1, y - KERN_STEP / 2, maxx + 1, y + KERN_STEP / 2))
+            if part.is_empty:
+                left.append(None)
+                right.append(None)
+            else:
+                b = part.bounds
+                left.append(b[0] + shift)
+                right.append(adv - (b[2] + shift))
+        # «размытие»: у соседних строк берём ближайшую к краю точку
+        def blur(arr):
+            out = []
+            for i in range(len(arr)):
+                win = [v for v in arr[max(0, i - KERN_BLUR): i + KERN_BLUR + 1] if v is not None]
+                out.append(min(win) if win else None)
+            return out
+        prof[n] = (blur(left), blur(right))
+
+    pairs = {}
+    for a in bases:
+        ra = prof[a][1]
+        for b in bases:
+            lb = prof[b][0]
+            gaps = [x + y for x, y in zip(ra, lb) if x is not None and y is not None]
+            if len(gaps) < 2:
+                continue
+            gap = min(gaps)
+            if gap > KERN_TARGET:
+                k = -(gap - KERN_TARGET) * KERN_TIGHTEN
+            else:
+                k = (KERN_TARGET - gap) * 0.8
+            k = max(KERN_MIN, min(KERN_MAX, k))
+            k = int(round(k / 5.0) * 5)
+            if abs(k) >= 15:
+                pairs[(a, b)] = k
+
+    def cls(n):
+        return f"@k_{n}"
+
+    lines = []
+    for n in bases:
+        members = [n] + ([f"{n}.alt1", f"{n}.alt2"] if n in letters else [])
+        lines.append(f"{cls(n)} = [{' '.join(members)}];")
+    lines.append("feature kern {")
+    for (a, b), k in sorted(pairs.items()):
+        lines.append(f"    pos {cls(a)} {cls(b)} {k};")
+    lines.append("} kern;")
+    print("kerning pairs:", len(pairs))
+    return "\n".join(lines)
+
+
 ALTS = {  # вариант: (ширина, поворот°, сдвиг по вертикали)
     "alt1": (0.92, 2.2, 14),
     "alt2": (1.07, -1.6, -10),
@@ -497,6 +586,7 @@ def main():
     cmap[0xA0] = "uni00A0"
 
     order = [".notdef", "space", "uni00A0"] + list(shapes.keys())
+    kern_fea = kerning(shapes, set(letters))
 
     def build(fmt):
         fb = FontBuilder(UPM, isTTF=(fmt == "ttf"))
@@ -539,7 +629,7 @@ def main():
             "uniqueFontIdentifier": f"{FAMILY}-Regular-1.000",
             "fullName": f"{FAMILY} Regular",
             "psName": f"{FAMILY}-Regular",
-            "version": "Version 1.000",
+            "version": "Version 1.100",
             "designer": "Kapelka project",
             "description": "Рукописный дисплейный шрифт: фломастерный штрих, листики вместо точек, прыгающая строка.",
             "licenseDescription": "Free for personal and commercial use.",
@@ -571,6 +661,8 @@ lookup bounce {{
 feature calt {{ lookup bounce; }} calt;
 feature salt {{ sub @base by @alt1; }} salt;
 feature ss01 {{ sub @base by @alt2; }} ss01;
+
+{kern_fea}
 """
         addOpenTypeFeaturesFromString(fb.font, fea)
         out = os.path.join(HERE, f"{FAMILY}-Regular.{fmt}")
@@ -585,6 +677,7 @@ feature ss01 {{ sub @base by @alt2; }} ss01;
 
 def specimen(path):
     from PIL import Image, ImageDraw, ImageFont
+    kern_test(path)
     W, H = 1800, 1250
     img = Image.new("RGB", (W, H), (250, 248, 240))
     d = ImageDraw.Draw(img)
@@ -613,6 +706,23 @@ def specimen(path):
     out = os.path.join(HERE, "specimen.png")
     img.save(out)
     print("saved", out)
+
+
+def kern_test(path):
+    """Сравнение: без кернинга / с кернингом."""
+    from PIL import Image, ImageDraw, ImageFont
+    f = ImageFont.truetype(path, 90, layout_engine=ImageFont.Layout.RAQM)
+    lab = ImageFont.truetype(path, 40, layout_engine=ImageFont.Layout.RAQM)
+    texts = ["ТОВАР «Уют», Год. LT AV", "Гусь, Учёт, Ягода. Yes, To"]
+    img = Image.new("RGB", (1800, 680), (250, 248, 240))
+    d = ImageDraw.Draw(img)
+    y = 20
+    for t in texts:
+        d.text((60, y), "без кернинга", font=lab, fill=(150, 60, 50)); y += 45
+        d.text((60, y), t, font=f, fill=(30, 35, 30), features=["-kern"]); y += 110
+        d.text((60, y), "с кернингом", font=lab, fill=(40, 120, 60)); y += 45
+        d.text((60, y), t, font=f, fill=(30, 35, 30)); y += 110
+    img.save(os.path.join(HERE, "kerning.png"))
 
 
 if __name__ == "__main__":
