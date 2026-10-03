@@ -27,7 +27,7 @@ from fontTools.feaLib.builder import addOpenTypeFeaturesFromString
 from shapely.geometry.polygon import orient
 from fontTools.pens.cu2quPen import Cu2QuPen
 
-from build_kapelka import ln, arc, P, leaf_poly, polys_of
+from build_kapelka import ln, arc, bz, P, leaf_poly, polys_of
 from bezier_fit import draw_ring
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -98,9 +98,9 @@ def lbowl(xr, ytop, ybot, xl):
              ln((xl + r, ybot), (xr, ybot)))
 
 
-def G(strokes, free=(), leaves=(), band=(0, CH)):
+def G(strokes, free=(), leaves=(), band=(0, CH), geoms=()):
     return {"strokes": [list(s) for s in strokes], "free": [list(s) for s in free],
-            "leaves": list(leaves), "band": band}
+            "leaves": list(leaves), "band": band, "geoms": list(geoms)}
 
 
 # ---------------------------------------------------------------- буквы
@@ -236,7 +236,8 @@ def Shcha_(w):
               ln((x1, CH), (x1, B)), ln(((R + x1) / 2, CH), ((R + x1) / 2, B))], band=(-140, CH))
 
 
-def soft_(w, x0=R):
+def soft_(w, x0=None):
+    x0 = R if x0 is None else x0
     return [ln((x0, 0), (x0, CH)), rbowl(x0, 410, B, w - R)]
 
 
@@ -471,6 +472,416 @@ def punct():
     return p
 
 
+# ---------------------------------------------------------------- расширенный набор знаков
+import unicodedata
+
+
+def rot180(g, w):
+    """Повернуть знак на 180° внутри ширины w (для Ә, Һ, ¡, ¿)."""
+    t = lambda s: [(w - x, CH - y) for x, y in s]
+    out = dict(g)
+    out["strokes"] = [t(s) for s in g["strokes"]]
+    out["free"] = [t(s) for s in g["free"]]
+    lo, hi = g["band"]
+    out["band"] = (CH - hi, CH - lo)
+    return out
+
+
+def addg(g, strokes=(), geoms=(), leaves=(), band=None):
+    out = dict(g)
+    out["strokes"] = g["strokes"] + [list(s) for s in strokes]
+    out["geoms"] = g.get("geoms", []) + list(geoms)
+    out["leaves"] = g["leaves"] + list(leaves)
+    if band:
+        out["band"] = band
+    return out
+
+
+def mstroke(pts, k=0.78):
+    return LineString(pts).buffer(R * k, cap_style="flat", join_style="round", quad_segs=16)
+
+
+def skel_box(g):
+    xs = [x for s in g["strokes"] for x, _ in s]
+    return min(xs), max(xs)
+
+
+# ---- диакритические знаки: функции (cx, xr) -> shapely-геометрия
+MK = 0.55       # толщина значков относительно основного штриха
+MH = 125        # высота зоны значков (по осевой)
+
+
+def _yb():
+    return CH + 40 + R * MK
+
+
+def _above(geom):
+    return geom.intersection(box(-2000, CH + 40, 4000, _yb() + MH + R * MK))
+
+
+def m_acute(cx, xr):
+    yb = _yb()
+    return _above(mstroke([(cx - 70, yb - 30), (cx + 80, yb + MH + 30)], MK))
+
+
+def m_grave(cx, xr):
+    yb = _yb()
+    return _above(mstroke([(cx + 70, yb - 30), (cx - 80, yb + MH + 30)], MK))
+
+
+def m_circ(cx, xr):
+    yb = _yb()
+    return _above(mstroke([(cx - 110, yb - 20), (cx, yb + MH - R * MK * 0.4), (cx + 110, yb - 20)], MK))
+
+
+def m_caron(cx, xr):
+    yb = _yb()
+    return _above(mstroke([(cx - 110, yb + MH + 20), (cx, yb + R * MK * 0.4), (cx + 110, yb + MH + 20)], MK))
+
+
+def m_breve(cx, xr):
+    yb = _yb()
+    return _above(mstroke(arc(cx, yb + MH, 100, MH - 10, 192, 348), MK))
+
+
+def m_tilde(cx, xr):
+    yb = _yb()
+    return _above(mstroke(bz((cx - 115, yb + 15), (cx - 50, yb + MH + 40), (cx + 50, yb - 40), (cx + 115, yb + MH - 15)), MK))
+
+
+def m_macron(cx, xr):
+    yb = _yb()
+    return _above(mstroke([(cx - 115, yb + MH / 2), (cx + 115, yb + MH / 2)], MK))
+
+
+def m_ring(cx, xr):
+    yb = _yb()
+    ro = MH / 2 + R * MK
+    ri = max(22, ro - 2 * R * MK)
+    c = Point(cx, yb + MH / 2)
+    return c.buffer(ro, quad_segs=24).difference(c.buffer(ri, quad_segs=24))
+
+
+def m_dot(cx, xr):
+    return leaf_poly(cx, _yb() + MH / 2, 40, 1.2 * (R / 60) ** 0.45)
+
+
+def m_diaer(cx, xr):
+    k = 1.15 * (R / 60) ** 0.45
+    d = 75 + R * 0.5
+    return unary_union([leaf_poly(cx - d, _yb() + MH / 2, 40, k), leaf_poly(cx + d, _yb() + MH / 2, 40, k)])
+
+
+def m_dacute(cx, xr):
+    yb = _yb()
+    return _above(unary_union([mstroke([(cx - 120, yb - 30), (cx - 30, yb + MH + 30)], MK * 0.9),
+                               mstroke([(cx + 30, yb - 30), (cx + 120, yb + MH + 30)], MK * 0.9)]))
+
+
+def _below(geom):
+    return geom.intersection(box(-2000, -280, 4000, R))
+
+
+def m_cedilla(cx, xr):
+    return _below(mstroke([(cx, R), (cx, -70), (cx - 80, -200)], MK * 1.1))
+
+
+def m_comma_below(cx, xr):
+    return _below(mstroke([(cx + 20, -60), (cx + 20, -120), (cx - 35, -230)], MK * 1.2))
+
+
+def m_ogonek(cx, xr):
+    x = xr - R * 0.3
+    return _below(mstroke(bz((x, R), (x - 100, -50), (x - 80, -190), (x + 35, -185)), MK * 1.1))
+
+
+MARKS = {0x0300: m_grave, 0x0301: m_acute, 0x0302: m_circ, 0x0303: m_tilde, 0x0304: m_macron,
+         0x0306: m_breve, 0x0307: m_dot, 0x0308: m_diaer, 0x030A: m_ring, 0x030B: m_dacute,
+         0x030C: m_caron, 0x0326: m_comma_below, 0x0327: m_cedilla, 0x0328: m_ogonek}
+APOS_CARON = {"ď", "ľ", "Ľ", "ť"}     # словацко-чешский «карон-апостроф»
+DOTLESS = {"i": "ı", "j": "ȷ", "і": "ı", "ј": "ȷ"}
+
+
+def base_table():
+    t = {}
+    for up, low, fn, ww, nw in CYR + LAT:
+        t[up] = (fn, cw(ww))
+        t[low] = (LOW_SPECIAL.get(low, fn), cw(nw))
+    t["ı"] = (I_lat, 120)
+    t["ȷ"] = (J_lat, cw(380))
+    t["І"] = (I_lat, 120)
+    return t
+
+
+def specials():
+    """Буквы, которые не собираются из основы и знака."""
+    sp = {}
+
+    def both(up, low, fn, ww, nw):
+        sp[up] = fn(cw(ww))
+        sp[low] = fn(cw(nw))
+
+    def AE(w):
+        xm = w * 0.46
+        return G([ln((0, 0), (xm, CH)), P(ln((w, T), (xm, T)), ln((xm, T), (xm, B)), ln((xm, B), (w, B))),
+                  ln((xm, M), (w - 50, M)), ln((xm * 0.3, 230), (xm, 230))])
+
+    def OE(w):
+        xm = w * 0.5
+        return G([oval(R, B, xm, T), ln((xm, 0), (xm, CH)),
+                  ln((xm, T), (w, T)), ln((xm, M), (w - 50, M)), ln((xm, B), (w, B))])
+
+    def Oslash(w):
+        return addg(O_(w), strokes=[ln((R * 0.4, 25), (w - R * 0.4, CH - 25))])
+
+    def Dbar(w):
+        return addg(D_lat(w), strokes=[ln((R - 130, M), (R + 140, M))])
+
+    def Thorn(w):
+        return G([ln((R, 0), (R, CH)), rbowl(R, 560, 150, w - R)])
+
+    def Hbar(w):
+        return addg(N_cyr(w), strokes=[ln((R - 90, 545), (w - R + 90, 545))])
+
+    def Lstroke(w):
+        return addg(L_lat(w), strokes=[ln((R - 110, 250), (R + 130, 450))])
+
+    def Ldot(w):
+        xd = R + (w - R) * 0.55
+        return addg(L_lat(w), strokes=[ln((xd, M - R), (xd, M + R))])
+
+    def Eng(w):
+        x1 = w - R
+        return G([P(ln((R, 0), (R, T)), ln((R, T), (x1, T)), ln((x1, T), (x1, -40)),
+                    arc(x1 - 110, -40, 110, 100, 0, -90), ln((x1 - 110, -140), (x1 - 200, -140)))],
+                 band=(-300, CH))
+
+    def Tbar(w):
+        return addg(Te_(w), strokes=[ln((w / 2 - 140, M), (w / 2 + 140, M))])
+
+    def IJ(w, dots=False):
+        j = J_lat(w)
+        sh = 2 * R + 110
+        g = G([ln((R, 0), (R, CH))] + [[(x + sh, y) for x, y in s] for s in j["strokes"]])
+        if dots:
+            g = with_leaves(g, [R, sh + w - R], y=825, k=1.2)
+        return g
+
+    def Sharp(w):
+        x1 = w - R
+        return G([P(ln((R, 0), (R, T)), ln((R, T), (x1, T)), ln((x1, T), (w * 0.42, 430))),
+                  rbowl(w * 0.42, 430, B, x1, xb=w * 0.3)])
+
+    for up, low, fn, ww, nw in [("Æ", "æ", AE, 1040, 640), ("Œ", "œ", OE, 1100, 680),
+                                ("Ø", "ø", Oslash, 760, 440), ("Ð", "ð", Dbar, 780, 430),
+                                ("Đ", "đ", Dbar, 780, 430), ("Þ", "þ", Thorn, 700, 400),
+                                ("Ħ", "ħ", Hbar, 780, 440), ("Ł", "ł", Lstroke, 600, 350),
+                                ("Ŀ", "ŀ", Ldot, 600, 350), ("Ŋ", "ŋ", Eng, 780, 440),
+                                ("Ŧ", "ŧ", Tbar, 780, 420), ("ẞ", "ß", Sharp, 700, 430)]:
+        both(up, low, fn, ww, nw)
+    sp["Ĳ"] = IJ(cw(600))
+    sp["ĳ"] = IJ(cw(380), dots=True)
+    sp["ı"] = I_lat(120)
+    sp["ĸ"] = K_(cw(430))
+    sp["İ"] = with_leaves(I_lat(120), [R], y=825, k=1.35)
+
+    # кириллица: украинский, белорусский, казахский, сербский, македонский
+    def Ye_ukr(w):
+        return G([oval_arc(R, B, w - R, T, 38, 322), ln((R, M), (w * 0.62, M))])
+
+    def Ghe_up(w):
+        x1 = w - R
+        return G([P(ln((R, 0), (R, T)), ln((R, T), (x1, T)), ln((x1, T), (x1, CH + 150)))], band=(0, CH + 150))
+
+    def Schwa(w):
+        return rot180(e_low(w), w)
+
+    def Ghe_bar(w):
+        return addg(Ge_(w), strokes=[ln((R - 100, 330), (R + 180, 330))])
+
+    def Ka_tail(w):
+        return addg(K_(w), strokes=[ln((w - 50, B), (w + 40, B), (w + 40, -140))], band=(-140, CH))
+
+    def En_tail(w):
+        x1 = w - R
+        return addg(N_cyr(w), strokes=[ln((x1, B), (x1 + 75, B), (x1 + 75, -140))], band=(-140, CH))
+
+    def O_bar(w):
+        return addg(O_(w), strokes=[ln((R, M), (w - R, M))])
+
+    def U_str_bar(w):
+        return addg(Y_lat(w), strokes=[ln((w / 2 - 140, 230), (w / 2 + 140, 230))])
+
+    def Shha(w):
+        return rot180(Che_(w), w)
+
+    def Dzhe(w):
+        x1 = w - R
+        return G([ln((R, CH), (R, B), (x1, B), (x1, CH)), ln((w / 2, B), (w / 2, -140))], band=(-140, CH))
+
+    def Lje(w):
+        w1 = w * 0.56
+        return addg(El_(w1), strokes=[rbowl(w1 - R, 410, B, w - R)])
+
+    def Nje(w):
+        w1 = w * 0.55
+        return addg(N_cyr(w1), strokes=[rbowl(w1 - R, 410, B, w - R)])
+
+    def Tshe(w, hook=False):
+        x1, xs = w - R, w * 0.28
+        r = 140
+        leg = [ln((xs + 5, 430), (x1 - r, 430)), arc(x1 - r, 430 - r, r, r, 90, 0)]
+        if hook:
+            leg += [ln((x1, 430 - r), (x1, -30)), arc(x1 - 100, -30, 100, 100, 0, -90),
+                    ln((x1 - 100, -130), (x1 - 190, -130))]
+        else:
+            leg += [ln((x1, 430 - r), (x1, 0))]
+        return G([ln((0, T), (w * 0.62, T)), ln((xs, 0), (xs, CH)), P(*leg)],
+                 band=(-260, CH) if hook else (0, CH))
+
+    for up, low, fn, ww, nw in [("Є", "є", Ye_ukr, 740, 430), ("Ґ", "ґ", Ghe_up, 640, 360),
+                                ("Ә", "ә", Schwa, 760, 420), ("Ғ", "ғ", Ghe_bar, 640, 360),
+                                ("Қ", "қ", Ka_tail, 780, 430), ("Ң", "ң", En_tail, 780, 440),
+                                ("Ө", "ө", O_bar, 760, 440), ("Ү", "ү", Y_lat, 840, 480),
+                                ("Ұ", "ұ", U_str_bar, 840, 480), ("Һ", "һ", Shha, 720, 420),
+                                ("Ј", "ј", J_lat, 600, 380), ("Ѕ", "ѕ", S_, 720, 410),
+                                ("Џ", "џ", Dzhe, 780, 440), ("Љ", "љ", Lje, 1120, 680),
+                                ("Њ", "њ", Nje, 1080, 660), ("Ћ", "ћ", Tshe, 820, 480)]:
+        both(up, low, fn, ww, nw)
+    sp["Ђ"] = Tshe(cw(820), hook=True)
+    sp["ђ"] = Tshe(cw(480), hook=True)
+    sp["І"] = I_lat(120)
+    sp["і"] = with_leaves(I_lat(120), [R], y=825, k=1.35)
+    sp["ј"] = with_leaves(J_lat(cw(380)), [cw(380) - R], y=825, k=1.35)
+    dx = 85 + R * 0.55
+    sp["Ї"] = with_leaves(I_lat(120), [R - dx, R + dx], y=825, k=0.95)
+    sp["ї"] = with_leaves(I_lat(120), [R - dx, R + dx], y=825, k=0.95)
+    return sp
+
+
+EXT_RANGES = list(range(0x00C0, 0x0100)) + list(range(0x0100, 0x0180)) + [0x0218, 0x0219, 0x021A, 0x021B] \
+    + list(range(0x0400, 0x0460)) + [0x0490, 0x0491, 0x0492, 0x0493, 0x049A, 0x049B, 0x04A2, 0x04A3,
+                                     0x04AE, 0x04AF, 0x04B0, 0x04B1, 0x04BA, 0x04BB, 0x04D8, 0x04D9,
+                                     0x04E8, 0x04E9, 0x1E9E]
+SKIP = {"×", "÷", "ſ", "ŉ"}
+
+
+KERN_BASE = {}   # буква с диакритикой -> основа (для классового кернинга)
+
+
+def extended(existing):
+    """Расширенная латиница и кириллица: специальные формы + основа со знаком."""
+    out = {}
+    sp = specials()
+    bases = base_table()
+    for cp in EXT_RANGES:
+        ch = chr(cp)
+        if ch in existing or ch in SKIP or not ch.isalpha():
+            continue
+        if ch in sp:
+            out[ch] = sp[ch]
+            continue
+        dec = unicodedata.decomposition(ch).split()
+        if len(dec) != 2 or dec[0].startswith("<"):
+            continue
+        base, mark = chr(int(dec[0], 16)), int(dec[1], 16)
+        base = DOTLESS.get(base, base)
+        if base not in bases or mark not in MARKS:
+            continue
+        fn, w = bases[base]
+        g = fn(w)
+        lo, hi = skel_box(g)
+        cx = (lo + hi) / 2
+        if ch in APOS_CARON:
+            xa = hi + 90 if ch in ("ď", "ť") else R + 150
+            geom = mstroke([(xa + 15, CH), (xa + 15, CH - 90), (xa - 20, CH - 190)], 0.8)
+            geom = geom.intersection(box(-2000, 0, 4000, CH))
+        else:
+            geom = MARKS[mark](cx, hi)
+        out[ch] = addg(g, geoms=[geom])
+        KERN_BASE[ch] = base if base in existing else dec_base(ch)
+    return out
+
+
+def dec_base(ch):
+    return chr(int(unicodedata.decomposition(ch).split()[0], 16))
+
+
+def punct_extra():
+    p = {}
+    sq = lambda x, y=0: ln((x, y), (x, y + 2 * R))
+    comma = lambda x, y=0: ln((x, y + 2 * R), (x, y + 30), (x - 50, y - 110))
+    turned = lambda x, y: ln((x - 20, y), (x - 20, y + 110), (x + 20, y + 230))
+    # улучшенные «?», «&», «@»
+    w = cw(440)
+    x1, xc = w - R, w / 2
+    p["?"] = G([P(oval_arc(R, 330, x1, T, 165, -90), ln((xc, 330), (xc, 250))), sq(xc)])
+    p["¿"] = rot180(p["?"], w)
+    p["¡"] = rot180(G([ln((R, CH), (R, 250)), sq(R)]), 2 * R)
+    w = cw(720)
+    p["&"] = G([oval(w * 0.14, 410, w * 0.56, T), ln((w * 0.22, 445), (w, 0)),
+                P(oval_arc(R, B, w * 0.72, 480, 118, 360), ln((w * 0.72, 270), (w, 270)))])
+    w = cw(880)
+    p["@"] = G([oval(w * 0.33, 170, w * 0.63, 470),
+                P(ln((w * 0.63, 480), (w * 0.63, 170)), oval_arc(R, -100, w - R, CH + 40, -32, 300))],
+               band=(-220, 900))
+    # кавычки
+    p["„"] = G([comma(R + 50), comma(R + 230)], band=(-250, CH))
+    p["‚"] = G([comma(R + 50)], band=(-250, CH))
+    p["“"] = G([turned(R + 20, 470), turned(R + 200, 470)])
+    p["”"] = G([ln((R + 20, CH), (R + 20, 590), (R - 20, 470)), ln((R + 200, CH), (R + 200, 590), (R + 160, 470))])
+    p["‹"] = G([ln((200, 560), (R, M), (200, 140))])
+    p["›"] = G([ln((R, 560), (200, M), (R, 140))])
+    # скобки и математика
+    p["{"] = G([ln((230, 820), (140, 820), (140, 420), (R, M), (140, 280), (140, -120), (230, -120))], band=(-200, 900))
+    p["}"] = G([ln((0, 820), (90, 820), (90, 420), (170, M), (90, 280), (90, -120), (0, -120))], band=(-200, 900))
+    p["<"] = G([ln((440, 600), (R, M), (440, 100))])
+    p[">"] = G([ln((0, 600), (380, M), (0, 100))])
+    p["≤"] = G([ln((440, 660), (R, 450), (440, 240)), ln((R, B), (440, B))])
+    p["≥"] = G([ln((0, 660), (380, 450), (0, 240)), ln((0, B), (380, B))])
+    p["±"] = G([ln((0, 430), (440, 430)), ln((220, 210), (220, 650)), ln((0, B), (440, B))])
+    p["×"] = G([ln((40, 140), (400, 560)), ln((40, 560), (400, 140))])
+    p["÷"] = G([ln((0, M), (440, M)), sq(220, 490), sq(220, 90)])
+    p["−"] = G([ln((0, M), (440, M))])
+    p["~"] = G([bz((0, 300), (110, 470), (330, 230), (440, 400))])
+    p["≈"] = G([bz((0, 420), (110, 590), (330, 350), (440, 520)), bz((0, 180), (110, 350), (330, 110), (440, 280))])
+    p["≠"] = G([ln((0, 450), (440, 450)), ln((0, 250), (440, 250)), ln((110, 60), (330, 640))])
+    p["^"] = G([ln((0, 450), (200, CH), (400, 450))])
+    p["`"] = G([ln((150, 640), (20, 780))], band=(0, 900))
+    p["|"] = G([ln((R, -150), (R, 850))], band=(-150, 850))
+    p["¦"] = G([ln((R, -150), (R, 250)), ln((R, 450), (R, 850))], band=(-150, 850))
+    p["′"] = G([ln((70, CH), (20, 480))])
+    p["″"] = G([ln((70, CH), (20, 480)), ln((230, CH), (180, 480))])
+    p["·"] = G([sq(R, M - R)])
+    p["•"] = G([], geoms=[Point(150, M).buffer(max(95, R * 1.4), quad_segs=24)])
+    # валюты
+    w = cw(420)
+    p["$"] = addg(S_(w), strokes=[ln((w / 2, -100), (w / 2, 800))], band=(-100, 800))
+    w = cw(480)
+    p["€"] = G([oval_arc(R, B, w - R, T, 40, 320), ln((-40, 410), (w * 0.6, 410)), ln((-40, 290), (w * 0.6, 290))])
+    p["£"] = G([P(oval_arc(w * 0.25, 330, w - R, T, 15, 180), ln((w * 0.25, (330 + T) / 2), (w * 0.25, B))),
+                ln((0, B), (w, B)), ln((0, M), (w * 0.62, M))])
+    w = cw(700)
+    p["¥"] = addg(Y_lat(w), strokes=[ln((w / 2 - 170, 300), (w / 2 + 170, 300)), ln((w / 2 - 170, 150), (w / 2 + 170, 150))])
+    w = cw(430)
+    p["¢"] = G([oval_arc(R, 110, w - R, 590, 40, 320), ln((w / 2, 0), (w / 2, CH))])
+    # прочее
+    ro = max(110, R * 1.4 + 40)
+    p["°"] = G([], geoms=[Point(ro, 700 - ro).buffer(ro, quad_segs=24).difference(
+        Point(ro, 700 - ro).buffer(ro - R * 1.4, quad_segs=24))])
+    w = 760
+    thin = 0.55
+    ring = oval(R, -30, w - R, 730)
+    p["©"] = G([ring], band=(-200, 900), geoms=[mstroke(oval_arc(230, 190, 530, 510, 45, 315), thin)])
+    p["®"] = G([ring], band=(-200, 900), geoms=[
+        mstroke(ln((290, 170), (290, 530)), thin),
+        mstroke(rbowl(290, 530, 360, 500), thin),
+        mstroke(ln((400, 360), (510, 170)), thin)])
+    p["™"] = G([], geoms=[mstroke(ln((0, 680), (280, 680)), thin), mstroke(ln((140, 680), (140, 420)), thin),
+                          mstroke(ln((360, 420), (360, 680), (470, 500), (580, 680), (580, 420)), thin)])
+    return p
+
+
 # ---------------------------------------------------------------- отрисовка
 
 def extend_ends(pts, band):
@@ -507,6 +918,7 @@ def render(spec):
     shape = shape.buffer(SOFT * 0.6, join_style="round").buffer(-SOFT * 0.6, join_style="round")
     extra = [LineString(s).buffer(R * 0.8, cap_style="flat", join_style="round") for s in spec["free"]]
     extra += [leaf_poly(x, y, a, k) for x, y, a, k in spec["leaves"]]
+    extra += spec.get("geoms", [])
     if extra:
         shape = unary_union([shape] + extra)
     return shape
@@ -522,8 +934,9 @@ def gname(ch):
 
 # ---------------------------------------------------------------- кернинг
 
-def kerning(shapes, target=2 * SB, tighten=0.5, kmin=-140, kmax=50):
-    ys = list(range(-200, 960, 20))
+def kerning(shapes, groups, target, tighten=0.5, kmin=-140, kmax=50):
+    """Автокернинг по профилям. shapes — представители классов, groups — {представитель: [члены]}."""
+    ys = list(range(-260, 1000, 20))
     prof = {}
     for n, (shape, shift, adv) in shapes.items():
         minx, _, maxx, _ = shape.bounds
@@ -548,8 +961,9 @@ def kerning(shapes, target=2 * SB, tighten=0.5, kmin=-140, kmax=50):
     pairs = {}
     names = list(shapes)
     for a in names:
+        ra = prof[a][1]
         for b in names:
-            gaps = [x + y for x, y in zip(prof[a][1], prof[b][0]) if x is not None and y is not None]
+            gaps = [x + y for x, y in zip(ra, prof[b][0]) if x is not None and y is not None]
             if len(gaps) < 2:
                 continue
             gap = min(gaps)
@@ -557,10 +971,11 @@ def kerning(shapes, target=2 * SB, tighten=0.5, kmin=-140, kmax=50):
             k = int(round(max(kmin, min(kmax, k)) / 5.0) * 5)
             if abs(k) >= 15:
                 pairs[(a, b)] = k
-    lines = ["feature kern {"]
-    lines += [f"    pos {a} {b} {k};" for (a, b), k in sorted(pairs.items())]
+    lines = [f"@k_{n} = [{' '.join(groups[n])}];" for n in names]
+    lines.append("feature kern {")
+    lines += [f"    pos @k_{a} @k_{b} {k};" for (a, b), k in sorted(pairs.items())]
     lines.append("} kern;")
-    print("kerning pairs:", len(pairs))
+    print("kerning pairs:", len(pairs), "classes:", len(names))
     return "\n".join(lines)
 
 
@@ -594,6 +1009,9 @@ def build_weight(style, r, soft, sb, wclass):
     specs = build_letters()
     dig, dw = digits()
     specs.update(punct())
+    specs.update(punct_extra())
+    KERN_BASE.clear()
+    specs.update(extended(specs))
 
     shapes, cmap = {}, {}
     for ch, spec in list(specs.items()) + list(dig.items()):
@@ -612,12 +1030,20 @@ def build_weight(style, r, soft, sb, wclass):
     cmap[0xA0] = "uni00A0"
     space = int(round(240 + 1.2 * R))
 
-    kern_names = {n: v for n, v in shapes.items() if n not in {gname(c) for c in dig}}
-    kern_fea = kerning(kern_names, target=2 * SB)
+    groups = {}
+    for ch in specs:
+        rep = KERN_BASE.get(ch, ch)
+        groups.setdefault(gname(rep), []).append(gname(ch))
+    reps = {n: shapes[n] for n in groups}
+    kern_fea = kerning(reps, groups, target=2 * SB)
     order = [".notdef", "space", "uni00A0"] + list(shapes)
 
-    upper = [gname(u) for u, *_ in CYR + LAT] + ["uni0401", "uni0419"]
-    lower = [gname(l) for _, l, *_ in CYR + LAT] + ["uni0451", "uni0439"]
+    upper, lower = [], []
+    for ch in specs:
+        lo = ch.lower()
+        if ch != lo and len(lo) == 1 and lo in specs:
+            upper.append(gname(ch))
+            lower.append(gname(lo))
     fea = f"""
 languagesystem DFLT dflt;
 languagesystem latn dflt;
@@ -674,7 +1100,7 @@ feature ss02 {{ featureNames {{ name "Narrow capitals"; }}; sub @upper by @lower
         else:
             fb.setupCFF(ps, {"FullName": f"{FAMILY} {style}"}, glyphs, {})
         fb.setupHorizontalMetrics(metrics)
-        fb.setupHorizontalHeader(ascent=950, descent=-250)
+        fb.setupHorizontalHeader(ascent=1000, descent=-300)
         names = {
             "familyName": FAMILY if style == "Regular" else f"{FAMILY} {style}",
             "styleName": "Regular",
@@ -686,8 +1112,8 @@ feature ss02 {{ featureNames {{ name "Narrow capitals"; }}; sub @upper by @lower
             "licenseDescription": "Free for personal and commercial use.",
         }
         fb.setupNameTable(names)
-        fb.setupOS2(sTypoAscender=800, sTypoDescender=-200, sTypoLineGap=200,
-                    usWinAscent=950, usWinDescent=250, sxHeight=CH, sCapHeight=CH,
+        fb.setupOS2(sTypoAscender=800, sTypoDescender=-200, sTypoLineGap=300,
+                    usWinAscent=1020, usWinDescent=300, sxHeight=CH, sCapHeight=CH,
                     achVendID="KPLK", fsType=0, usWeightClass=wclass,
                     version=4, fsSelection=(0x40 if style == "Regular" else 0) | 0x80,
                     ulUnicodeRange1=(1 << 0) | (1 << 1) | (1 << 9), ulCodePageRange1=(1 << 0) | (1 << 2))
@@ -710,7 +1136,7 @@ def specimen():
     def F(style, s):
         return ImageFont.truetype(os.path.join(HERE, f"{FAMILY}-{style}.otf"), s,
                                   layout_engine=ImageFont.Layout.RAQM)
-    img = Image.new("RGB", (1900, 1640), (250, 248, 240))
+    img = Image.new("RGB", (1900, 1760), (250, 248, 240))
     d = ImageDraw.Draw(img)
     green, ink, grey = (40, 120, 60), (30, 35, 30), (120, 120, 110)
     lab = F("Regular", 34)
@@ -732,6 +1158,7 @@ def specimen():
     y += 300
     d.text((60, y), "СВЕЖИЕ ОВОЩИ", font=F("Black", 110), fill=green)
     d.text((60, y + 140), "с грядки — каждый день", font=F("Light", 80), fill=ink)
+    d.text((60, y + 260), "Zażółć gęślą jaźń · Ünïcödé · Їжак · Қазақ · Ђурђевак", font=F("Regular", 58), fill=ink)
     img.save(os.path.join(HERE, "gryadka-specimen.png"))
     print("saved specimen")
 
