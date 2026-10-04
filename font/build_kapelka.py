@@ -621,25 +621,43 @@ def main():
             fb.setupGlyf(glyphs)
         else:
             fb.setupCFF(FAMILY + "-Regular", {"FullName": FAMILY + " Regular"}, glyphs, {})
+        from fontTools.misc.timeTools import timestampNow
+        y_max = max(sh.bounds[3] for sh, _, _ in shapes.values())
+        y_min = min(sh.bounds[1] for sh, _, _ in shapes.values())
+        asc = int(math.ceil(max(y_max, 1000)))
+        desc = int(math.ceil(max(-y_min, 300)))
+        fb.setupHead(fontRevision=1.1, created=timestampNow(), modified=timestampNow())
         fb.setupHorizontalMetrics(metrics)
-        fb.setupHorizontalHeader(ascent=900, descent=-300)
+        fb.setupHorizontalHeader(ascent=asc, descent=-desc, lineGap=0)
         fb.setupNameTable({
             "familyName": FAMILY,
             "styleName": "Regular",
-            "uniqueFontIdentifier": f"{FAMILY}-Regular-1.000",
+            "uniqueFontIdentifier": f"{FAMILY}-Regular-1.100",
             "fullName": f"{FAMILY} Regular",
             "psName": f"{FAMILY}-Regular",
             "version": "Version 1.100",
             "designer": "Kapelka project",
             "description": "Рукописный дисплейный шрифт: фломастерный штрих, листики вместо точек, прыгающая строка.",
-            "licenseDescription": "Free for personal and commercial use.",
-        })
-        fb.setupOS2(sTypoAscender=ASC + 60, sTypoDescender=DSC - 40, sTypoLineGap=200,
-                    usWinAscent=900, usWinDescent=300, sxHeight=XH, sCapHeight=CH,
-                    achVendID="KPLK", fsType=0, ulUnicodeRange1=(1 << 0) | (1 << 1) | (1 << 9),
+            "copyright": "Copyright 2026 Gryadka Project Authors. All rights reserved.",
+            "licenseDescription": "Use rights are granted by the font owner under a separate written license.",
+        }, mac=False)
+        fb.setupOS2(sTypoAscender=asc, sTypoDescender=-desc, sTypoLineGap=0,
+                    usWinAscent=asc, usWinDescent=desc, sxHeight=XH, sCapHeight=CH,
+                    achVendID="KPLK", fsType=0, version=4, fsSelection=0x40 | 0x80,
+                    ulUnicodeRange1=(1 << 0) | (1 << 1) | (1 << 9),
                     ulCodePageRange1=(1 << 0) | (1 << 2))
         fb.setupPost()
-        fb.setupDummyDSIG() if hasattr(fb, "setupDummyDSIG") else None
+        if fmt == "ttf":                  # сглаживание без хинтинга
+            from fontTools.ttLib import newTable
+            from fontTools.ttLib.tables import ttProgram
+            prep = newTable("prep")
+            prep.program = ttProgram.Program()
+            prep.program.fromBytecode(bytes([0xB8, 0x01, 0xFF, 0x85, 0xB0, 0x04, 0x8D]))
+            fb.font["prep"] = prep
+            gasp = newTable("gasp")
+            gasp.version = 1
+            gasp.gaspRange = {0xFFFF: 0x000F}
+            fb.font["gasp"] = gasp
 
         base = " ".join(letters)
         a1 = " ".join(n + ".alt1" for n in letters)
@@ -660,7 +678,7 @@ lookup bounce {{
 
 feature calt {{ lookup bounce; }} calt;
 feature salt {{ sub @base by @alt1; }} salt;
-feature ss01 {{ sub @base by @alt2; }} ss01;
+feature ss01 {{ featureNames {{ name "Wide alternates"; }}; sub @base by @alt2; }} ss01;
 
 {kern_fea}
 """
