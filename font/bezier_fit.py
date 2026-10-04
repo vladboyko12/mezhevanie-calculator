@@ -237,12 +237,21 @@ def draw_ring(coords, pen, shift=0.0):
         return
     cmds = _with_extrema(cmds, start)
     sh = np.array([shift, 0.0])
-    pen.moveTo(tuple(start + sh))
+    q = lambda p: (int(round(p[0] + sh[0])), int(round(p[1] + sh[1])))   # сразу в целые координаты шрифта
+    first = cur = q(start)
+    pen.moveTo(first)
     for i, c in enumerate(cmds):
         last = i == len(cmds) - 1
         if c[0] == "line":
-            if not last:          # последний отрезок закрывает closePath
-                pen.lineTo(tuple(c[1] + sh))
+            pt = q(c[1])
+            # последний отрезок замыкает closePath; отрезки нулевой длины не пишем
+            if not last and pt != cur:
+                pen.lineTo(pt)
+                cur = pt
         else:
-            pen.curveTo(tuple(c[1] + sh), tuple(c[2] + sh), tuple(c[3] + sh))
+            p1, p2, p3 = q(c[1]), q(c[2]), q(c[3])
+            if p1 == p2 == p3 == cur:
+                continue
+            pen.curveTo(p1, p2, p3)
+            cur = p3
     pen.closePath()

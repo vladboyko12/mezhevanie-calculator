@@ -371,9 +371,22 @@ LAT = [
 LOW_SPECIAL = {"а": a_low, "a": a_low, "е": e_low, "e": e_low}
 
 
+XH = 600          # высота строчных (капитель пониже прописных, у Villula она равна прописным)
+CAPW = 0.88       # прописные уже, чем в первой версии
+LOWW = 1.08       # строчные чуть шире
+
+
 def cw(w):
     """Компенсация ширины: у жирного начертания буквы шире, чтобы не забивались просветы."""
     return w + (R - 60) * (1.3 if w >= 600 else 1.9)
+
+
+def W_UP(w):
+    return cw(w * CAPW)
+
+
+def W_LO(w):
+    return cw(w * LOWW)
 
 
 def with_leaves(g, xs, y=815, k=1.6):
@@ -392,16 +405,16 @@ def breve(g, w):
 def build_letters():
     out = {}   # char -> glyph spec
     for up, low, fn, ww, nw in CYR + LAT:
-        out[up] = fn(cw(ww))
-        out[low] = LOW_SPECIAL.get(low, fn)(cw(nw))
+        out[up] = fn(W_UP(ww))
+        out[low] = LOW_SPECIAL.get(low, fn)(W_LO(nw))
     # диакритика
-    we, ne = cw(680), cw(380)
+    we, ne = W_UP(680), W_LO(380)
     out["Ё"] = with_leaves(E_(we), [we * 0.31, we * 0.7])
     out["ё"] = with_leaves(e_low(ne), [ne * 0.28, ne * 0.76], k=1.3)
-    out["Й"] = breve(I_(cw(800)), cw(800))
-    out["й"] = breve(I_(cw(440)), cw(440))
+    out["Й"] = breve(I_(W_UP(800)), W_UP(800))
+    out["й"] = breve(I_(W_LO(440)), W_LO(440))
     out["i"] = with_leaves(I_lat(120), [R], y=825, k=1.35)
-    out["j"] = with_leaves(J_lat(cw(380)), [cw(380) - R], y=825, k=1.35)
+    out["j"] = with_leaves(J_lat(W_LO(380)), [W_LO(380) - R], y=825, k=1.35)
     return out
 
 
@@ -605,10 +618,10 @@ DOTLESS = {"i": "ı", "j": "ȷ", "і": "ı", "ј": "ȷ"}
 def base_table():
     t = {}
     for up, low, fn, ww, nw in CYR + LAT:
-        t[up] = (fn, cw(ww))
-        t[low] = (LOW_SPECIAL.get(low, fn), cw(nw))
+        t[up] = (fn, W_UP(ww))
+        t[low] = (LOW_SPECIAL.get(low, fn), W_LO(nw))
     t["ı"] = (I_lat, 120)
-    t["ȷ"] = (J_lat, cw(380))
+    t["ȷ"] = (J_lat, W_LO(380))
     t["І"] = (I_lat, 120)
     return t
 
@@ -618,8 +631,8 @@ def specials():
     sp = {}
 
     def both(up, low, fn, ww, nw):
-        sp[up] = fn(cw(ww))
-        sp[low] = fn(cw(nw))
+        sp[up] = fn(W_UP(ww))
+        sp[low] = fn(W_LO(nw))
 
     def AE(w):
         xm = w * 0.46
@@ -679,10 +692,10 @@ def specials():
                                 ("Ŀ", "ŀ", Ldot, 600, 350), ("Ŋ", "ŋ", Eng, 780, 440),
                                 ("Ŧ", "ŧ", Tbar, 780, 420), ("ẞ", "ß", Sharp, 700, 430)]:
         both(up, low, fn, ww, nw)
-    sp["Ĳ"] = IJ(cw(600))
-    sp["ĳ"] = IJ(cw(380), dots=True)
+    sp["Ĳ"] = IJ(W_UP(600))
+    sp["ĳ"] = IJ(W_LO(380), dots=True)
     sp["ı"] = I_lat(120)
-    sp["ĸ"] = K_(cw(430))
+    sp["ĸ"] = K_(W_LO(430))
     sp["İ"] = with_leaves(I_lat(120), [R], y=825, k=1.35)
 
     # кириллица: украинский, белорусский, казахский, сербский, македонский
@@ -748,11 +761,11 @@ def specials():
                                 ("Џ", "џ", Dzhe, 780, 440), ("Љ", "љ", Lje, 1120, 680),
                                 ("Њ", "њ", Nje, 1080, 660), ("Ћ", "ћ", Tshe, 820, 480)]:
         both(up, low, fn, ww, nw)
-    sp["Ђ"] = Tshe(cw(820), hook=True)
-    sp["ђ"] = Tshe(cw(480), hook=True)
+    sp["Ђ"] = Tshe(W_UP(820), hook=True)
+    sp["ђ"] = Tshe(W_LO(480), hook=True)
     sp["І"] = I_lat(120)
     sp["і"] = with_leaves(I_lat(120), [R], y=825, k=1.35)
-    sp["ј"] = with_leaves(J_lat(cw(380)), [cw(380) - R], y=825, k=1.35)
+    sp["ј"] = with_leaves(J_lat(W_LO(380)), [W_LO(380) - R], y=825, k=1.35)
     dx = 85 + R * 0.55
     sp["Ї"] = with_leaves(I_lat(120), [R - dx, R + dx], y=825, k=0.95)
     sp["ї"] = with_leaves(I_lat(120), [R - dx, R + dx], y=825, k=0.95)
@@ -934,7 +947,7 @@ def gname(ch):
 
 # ---------------------------------------------------------------- кернинг
 
-def kerning(shapes, groups, target, tighten=0.5, kmin=-140, kmax=50):
+def kerning(shapes, groups, target, tighten=0.5, kmin=-140, kmax=50, slant=0.0):
     """Автокернинг по профилям. shapes — представители классов, groups — {представитель: [члены]}."""
     ys = list(range(-260, 1000, 20))
     prof = {}
@@ -948,8 +961,9 @@ def kerning(shapes, groups, target, tighten=0.5, kmin=-140, kmax=50):
                 right.append(None)
             else:
                 b = part.bounds
-                left.append(b[0] + shift)
-                right.append(adv - (b[2] + shift))
+                off = slant * (y - CH / 2)          # выпрямляем курсив, чтобы просветы считались как у прямого
+                left.append(b[0] + shift - off)
+                right.append(adv - (b[2] + shift - off))
 
         def blur(arr):
             out = []
@@ -984,9 +998,56 @@ def kerning(shapes, groups, target, tighten=0.5, kmin=-140, kmax=50):
 WEIGHTS = [
     # стиль,    полуширина штриха, мягкие углы, отступ, usWeightClass
     ("Light",   32, 10, 44, 300),
-    ("Regular", 60, 16, 48, 400),
+    ("Regular", 46, 13, 46, 400),
+    ("Medium",  60, 16, 48, 500),
+    ("Bold",    74, 18, 50, 700),
     ("Black",   88, 20, 52, 900),
 ]
+ITALIC_ANGLE = 9.0       # наклон курсива в градусах
+
+
+def to_small(spec):
+    """Сжать глифовый скелет по вертикали до высоты строчных. Толщина штриха не меняется,
+    нижние выносные элементы остаются как были."""
+    k = (XH - 2 * R) / (CH - 2 * R)
+    dy = XH - CH
+
+    def my(y):
+        if y <= R:
+            return y
+        if y <= T:
+            return R + (y - R) * k
+        return y + dy
+
+    tp = lambda s: [(x, my(y)) for x, y in s]
+    out = dict(spec)
+    out["strokes"] = [tp(s) for s in spec["strokes"]]
+    out["free"] = [tp(s) for s in spec["free"]]
+    out["leaves"] = [(x, my(y), a, kk) for x, y, a, kk in spec["leaves"]]
+    lo, hi = spec["band"]
+    out["band"] = (my(lo), my(hi))
+    geoms = []
+    for g in spec.get("geoms", []):
+        geoms.append(affinity.translate(g, 0, dy) if g.bounds[1] >= CH * 0.5 else g)
+    out["geoms"] = geoms
+    return out
+
+
+def slant_spec(spec):
+    """Наклонить скелет глифа (до отрисовки штриха, поэтому толщина линий не искажается)."""
+    t = math.tan(math.radians(ITALIC_ANGLE))
+    y0 = CH / 2
+    tp = lambda s: [(x + (y - y0) * t, y) for x, y in s]
+    out = dict(spec)
+    out["strokes"] = [tp(s) for s in spec["strokes"]]
+    out["free"] = [tp(s) for s in spec["free"]]
+    out["leaves"] = [(x + (y - y0) * t, y, a, k) for x, y, a, k in spec["leaves"]]
+    out["geoms"] = [affinity.skew(g, xs=ITALIC_ANGLE, origin=(0, y0)) for g in spec.get("geoms", [])]
+    return out
+
+
+def is_lower(ch):
+    return ch.isalpha() and ch.islower()
 
 
 def set_weight(r, soft, sb):
@@ -1004,7 +1065,13 @@ def draw_curves(shape, pen, shift, fmt):
             draw_ring(list(ring.coords)[:-1], pen, shift)
 
 
-def build_weight(style, r, soft, sb, wclass):
+MATH = set("+−=≠≈<>≤≥±×÷~")
+VERSION = "2.100"
+COPYRIGHT = "Copyright 2026 Gryadka Project Authors. All rights reserved."
+LICENSE_TEXT = "Use rights are granted by the font owner under a separate written license."
+
+
+def build_weight(style, r, soft, sb, wclass, italic=False):
     set_weight(r, soft, sb)
     specs = build_letters()
     dig, dw = digits()
@@ -1012,14 +1079,28 @@ def build_weight(style, r, soft, sb, wclass):
     specs.update(punct_extra())
     KERN_BASE.clear()
     specs.update(extended(specs))
+    specs = {ch: (to_small(sp) if is_lower(ch) else sp) for ch, sp in specs.items()}
+    ref_bounds = {}
+    if italic:
+        # ширины и боковые отступы курсива равны прямым: меряем прямой контур, рисуем наклонный
+        for ch, sp in list(specs.items()) + list(dig.items()):
+            ref_bounds[ch] = render(sp).bounds
+        specs = {ch: slant_spec(sp) for ch, sp in specs.items()}
+        dig = {ch: slant_spec(sp) for ch, sp in dig.items()}
 
+    rendered = {ch: render(spec) for ch, spec in list(specs.items()) + list(dig.items())}
+    if not italic:
+        ref_bounds = {ch: sh.bounds for ch, sh in rendered.items()}
+    math_w = max(ref_bounds[c][2] - ref_bounds[c][0] for c in MATH if c in ref_bounds)
     shapes, cmap = {}, {}
-    for ch, spec in list(specs.items()) + list(dig.items()):
+    for ch, shape in rendered.items():
         name = gname(ch)
-        shape = render(spec)
-        minx, _, maxx, _ = shape.bounds
+        minx, _, maxx, _ = ref_bounds[ch]
         if ch in dig:                     # табличные цифры: общая ширина, знак по центру
             adv = int(round(dw + 2 * SB))
+            shift = (adv - (maxx - minx)) / 2 - minx
+        elif ch in MATH:                  # математические знаки: одна ширина
+            adv = int(round(math_w + 2 * SB))
             shift = (adv - (maxx - minx)) / 2 - minx
         else:
             shift = -minx + SB
@@ -1035,7 +1116,8 @@ def build_weight(style, r, soft, sb, wclass):
         rep = KERN_BASE.get(ch, ch)
         groups.setdefault(gname(rep), []).append(gname(ch))
     reps = {n: shapes[n] for n in groups}
-    kern_fea = kerning(reps, groups, target=2 * SB)
+    kern_fea = kerning(reps, groups, target=2 * SB,
+                       slant=math.tan(math.radians(ITALIC_ANGLE)) if italic else 0.0)
     order = [".notdef", "space", "uni00A0"] + list(shapes)
 
     upper, lower = [], []
@@ -1050,11 +1132,26 @@ languagesystem latn dflt;
 languagesystem cyrl dflt;
 @upper = [{' '.join(upper)}];
 @lower = [{' '.join(lower)}];
-feature ss01 {{ featureNames {{ name "Wide lowercase"; }}; sub @lower by @upper; }} ss01;
-feature ss02 {{ featureNames {{ name "Narrow capitals"; }}; sub @upper by @lower; }} ss02;
+feature ss01 {{ featureNames {{ name "Capitals instead of small caps"; }}; sub @lower by @upper; }} ss01;
+feature ss02 {{ featureNames {{ name "Small caps instead of capitals"; }}; sub @upper by @lower; }} ss02;
 {kern_fea}
 """
-    ps = f"{FAMILY}-{style}"
+    ribbi = style in ("Regular", "Bold")      # Regular и Bold образуют основную группу RIBBI
+    suffix = "Italic" if italic else ""
+    ps = ps_name(style, italic)
+    typo_sub = (style + (" Italic" if italic else "")) if not (style == "Regular" and italic) else "Italic"
+    if ribbi:
+        fam_name = FAMILY
+        sub_name = ("Bold" if style == "Bold" else "Regular") if not italic else \
+            ("Bold Italic" if style == "Bold" else "Italic")
+    else:
+        fam_name = f"{FAMILY} {style}"
+        sub_name = "Italic" if italic else "Regular"
+    full_name = f"{FAMILY} {typo_sub}" if typo_sub != "Regular" else f"{FAMILY} Regular"
+    fs_sel = 0x80 | (0x01 if italic else 0) | (0x20 if style == "Bold" else 0)
+    if not italic and style != "Bold":
+        fs_sel |= 0x40
+    mac_style = (1 if style == "Bold" else 0) | (2 if italic else 0)
     for fmt in ("ttf", "otf"):
         fb = FontBuilder(UPM, isTTF=(fmt == "ttf"))
         fb.setupGlyphOrder(order)
@@ -1098,67 +1195,125 @@ feature ss02 {{ featureNames {{ name "Narrow capitals"; }}; sub @upper by @lower
                 g.recalcBounds(glyf)
                 metrics[name] = (metrics[name][0], g.xMin)
         else:
-            fb.setupCFF(ps, {"FullName": f"{FAMILY} {style}"}, glyphs, {})
+            fb.setupCFF(ps, {"FullName": full_name}, glyphs, {})
+        from fontTools.misc.timeTools import timestampNow
+        fb.setupHead(fontRevision=float(VERSION), created=timestampNow(), modified=timestampNow(),
+                     macStyle=mac_style)
         fb.setupHorizontalMetrics(metrics)
-        fb.setupHorizontalHeader(ascent=1000, descent=-300)
+        t_run = int(round(math.tan(math.radians(ITALIC_ANGLE)) * UPM)) if italic else 0
+        fb.setupHorizontalHeader(ascent=1000, descent=-300, lineGap=0,
+                                 caretSlopeRise=UPM if italic else 1, caretSlopeRun=t_run)
         names = {
-            "familyName": FAMILY if style == "Regular" else f"{FAMILY} {style}",
-            "styleName": "Regular",
-            "typographicFamily": FAMILY, "typographicSubfamily": style,
-            "uniqueFontIdentifier": f"{ps}-2.000",
-            "fullName": f"{FAMILY} {style}", "psName": ps,
-            "version": "Version 2.000", "designer": "Kapelka project",
-            "description": "Плакатный геометрический гротеск: широкие прописные, узкие капительные строчные, мягкие углы, листики.",
-            "licenseDescription": "Free for personal and commercial use.",
+            "familyName": fam_name,
+            "styleName": sub_name,
+            "typographicFamily": FAMILY, "typographicSubfamily": typo_sub,
+            "uniqueFontIdentifier": f"{ps}-{VERSION}",
+            "fullName": full_name, "psName": ps,
+            "version": f"Version {VERSION}", "copyright": COPYRIGHT, "designer": "Gryadka Project",
+            "description": "Display geometric sans: wide capitals, lower small-cap lowercase, soft corners, leaf dots.",
+            "licenseDescription": LICENSE_TEXT,
         }
-        fb.setupNameTable(names)
-        fb.setupOS2(sTypoAscender=800, sTypoDescender=-200, sTypoLineGap=300,
-                    usWinAscent=1020, usWinDescent=300, sxHeight=CH, sCapHeight=CH,
+        fb.setupNameTable(names, mac=False)
+        from fontTools.otlLib.builder import buildStatTable
+        # статичный шрифт: в STAT только его собственные значения осей
+        wval = dict(value=wclass, name=style)
+        if style == "Regular":
+            wval.update(flags=0x2, linkedValue=700)
+        ival = dict(value=1, name="Italic") if italic else dict(value=0, name="Upright", flags=0x2, linkedValue=1)
+        buildStatTable(fb.font, [
+            dict(tag="wght", name="Weight", ordering=0, values=[wval]),
+            dict(tag="ital", name="Italic", ordering=1, values=[ival]),
+        ], elidedFallbackName="Regular")
+        nt = fb.font["name"]
+        nt.names = [n for n in nt.names if n.platformID != 1]    # без записей для Mac
+        y_max = max(sh.bounds[3] for sh, _, _ in shapes.values())
+        y_min = min(sh.bounds[1] for sh, _, _ in shapes.values())
+        fb.setupOS2(sTypoAscender=1000, sTypoDescender=-300, sTypoLineGap=0,
+                    usWinAscent=int(math.ceil(max(y_max, 1000))), usWinDescent=int(math.ceil(max(-y_min, 300))),
+                    sxHeight=XH, sCapHeight=CH,
                     achVendID="KPLK", fsType=0, usWeightClass=wclass,
-                    version=4, fsSelection=(0x40 if style == "Regular" else 0) | 0x80,
+                    version=4, fsSelection=fs_sel,
                     ulUnicodeRange1=(1 << 0) | (1 << 1) | (1 << 9), ulCodePageRange1=(1 << 0) | (1 << 2))
-        fb.setupPost()
+        fb.setupPost(italicAngle=-ITALIC_ANGLE if italic else 0)
+        if fmt == "ttf":                  # сглаживание без хинтинга: корректное заполнение на мелких размерах
+            from fontTools.ttLib import newTable
+            from fontTools.ttLib.tables import ttProgram
+            prep = newTable("prep")
+            prep.program = ttProgram.Program()
+            prep.program.fromBytecode(bytes([0xB8, 0x01, 0xFF, 0x85, 0xB0, 0x04, 0x8D]))
+            fb.font["prep"] = prep
+            gasp = newTable("gasp")
+            gasp.version = 1
+            gasp.gaspRange = {0xFFFF: 0x000F}
+            fb.font["gasp"] = gasp
         addOpenTypeFeaturesFromString(fb.font, fea)
         out = os.path.join(HERE, f"{ps}.{fmt}")
         fb.save(out)
-        print("saved", out, len(order), "glyphs")
+        print("saved", out, len(order), "glyphs", flush=True)
+
+
+def ps_name(style, italic):
+    if italic:
+        return f"{FAMILY}-Italic" if style == "Regular" else f"{FAMILY}-{style}Italic"
+    return f"{FAMILY}-{style}"
+
+
+def _build_variant(args):
+    build_weight(*args)
+    return args[0], args[5]
 
 
 def main():
+    """python3 build_gryadka.py [Имя ...]  — например Medium BoldItalic. Без аргументов: все 10 начертаний.
+    Флаг --no-specimen пропускает картинку-образец."""
+    import sys
+    from multiprocessing import Pool
+    names = [a for a in sys.argv[1:] if not a.startswith("--")]
+    variants = []
     for w in WEIGHTS:
-        build_weight(*w)
-    specimen()
+        for italic in (False, True):
+            if names and ps_name(w[0], italic).split("-", 1)[1] not in names:
+                continue
+            variants.append((*w, italic))
+    with Pool(min(4, len(variants))) as pool:
+        for style, italic in pool.imap_unordered(_build_variant, variants):
+            print("done", ps_name(style, italic), flush=True)
+    if "--no-specimen" not in sys.argv and not names:
+        specimen()
 
 
 def specimen():
     from PIL import Image, ImageDraw, ImageFont
 
-    def F(style, s):
-        return ImageFont.truetype(os.path.join(HERE, f"{FAMILY}-{style}.otf"), s,
+    def F(style, s, italic=False):
+        return ImageFont.truetype(os.path.join(HERE, f"{ps_name(style, italic)}.otf"), s,
                                   layout_engine=ImageFont.Layout.RAQM)
-    img = Image.new("RGB", (1900, 1760), (250, 248, 240))
+    styles = [w[0] for w in WEIGHTS]
+    img = Image.new("RGB", (2000, 2720), (250, 248, 240))
     d = ImageDraw.Draw(img)
     green, ink, grey = (40, 120, 60), (30, 35, 30), (120, 120, 110)
-    lab = F("Regular", 34)
+    lab = F("Regular", 32)
     y = 30
-    for style, _, *__ in WEIGHTS:
-        d.text((60, y + 30), style, font=lab, fill=grey)
-        d.text((300, y), "ГРЯДКА грядка 2025", font=F(style, 120), fill=green if style == "Black" else ink)
-        y += 170
+    for st in styles:
+        d.text((60, y + 30), st, font=lab, fill=grey)
+        d.text((330, y), "ГРЯДКА грядка 2025", font=F(st, 112), fill=green if st == "Black" else ink)
+        y += 150
     y += 10
-    for style, _, *__ in WEIGHTS:
-        d.text((60, y + 10), style, font=lab, fill=grey)
-        d.text((300, y), "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ", font=F(style, 40), fill=ink)
-        d.text((300, y + 70), "абвгдеёжзийклмнопрстуфхцчшщъыьэюя  0123456789", font=F(style, 50), fill=ink)
-        y += 170
+    for st in styles:
+        d.text((60, y + 30), st + " Italic", font=lab, fill=grey)
+        d.text((330, y), "ГРЯДКА грядка 2025", font=F(st, 112, True), fill=green if st == "Black" else ink)
+        y += 150
+    y += 20
+    for st, it in (("Regular", False), ("Bold", False), ("Regular", True), ("Bold", True)):
+        d.text((60, y + 10), st + (" Italic" if it else ""), font=lab, fill=grey)
+        d.text((330, y), "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ", font=F(st, 40, it), fill=ink)
+        d.text((330, y + 62), "абвгдеёжзийклмнопрстуфхцчшщъыьэюя  0123456789", font=F(st, 50, it), fill=ink)
+        y += 150
     y += 10
-    d.text((60, y), "Цифры", font=lab, fill=grey)
-    for i, style in enumerate(("Light", "Regular", "Black")):
-        d.text((300, y + i * 95), "0123456789  99,90 ₽", font=F(style, 80), fill=ink)
-    y += 300
     d.text((60, y), "СВЕЖИЕ ОВОЩИ", font=F("Black", 110), fill=green)
     d.text((60, y + 140), "с грядки — каждый день", font=F("Light", 80), fill=ink)
-    d.text((60, y + 260), "Zażółć gęślą jaźń · Ünïcödé · Їжак · Қазақ · Ђурђевак", font=F("Regular", 58), fill=ink)
+    d.text((60, y + 250), "Хлеб «Домашний» — 99,90 ₽", font=F("Bold", 80, True), fill=ink)
+    d.text((60, y + 370), "Zażółć gęślą jaźń · Ünïcödé · Їжак · Қазақ · Ђурђевак", font=F("Medium", 58), fill=ink)
     img.save(os.path.join(HERE, "gryadka-specimen.png"))
     print("saved specimen")
 
