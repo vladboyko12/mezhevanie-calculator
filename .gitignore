@@ -4,3 +4,5 @@ docs/superpowers/plans/*-report.md
 _check.mjs
 docs/
 проект.md
+__pycache__/
+*.pyc
