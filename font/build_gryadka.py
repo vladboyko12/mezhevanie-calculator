@@ -389,10 +389,10 @@ def W_LO(w):
     return cw(w * LOWW)
 
 
-def with_leaves(g, xs, y=815, k=1.6):
+def with_leaves(g, xs, y=815, k=1.6, angle=40):
     g = dict(g)
     k *= (R / 60) ** 0.45
-    g["leaves"] = g["leaves"] + [(x, y, 40, k) for x in xs]
+    g["leaves"] = g["leaves"] + [(x, y, angle, k) for x in xs]
     return g
 
 
@@ -411,8 +411,9 @@ def build_letters():
     we, ne = W_UP(680), W_LO(380)
     out["Ё"] = with_leaves(E_(we), [we * 0.31, we * 0.7])
     out["ё"] = with_leaves(e_low(ne), [ne * 0.28, ne * 0.76], k=1.3)
-    out["Й"] = breve(I_(W_UP(800)), W_UP(800))
-    out["й"] = breve(I_(W_LO(440)), W_LO(440))
+    # над Й один крупный листик по центру (у Ё их два, так буквы не спутать)
+    out["Й"] = with_leaves(I_(W_UP(800)), [W_UP(800) / 2], y=830, k=1.7, angle=22)
+    out["й"] = with_leaves(I_(W_LO(440)), [W_LO(440) / 2], y=830, k=1.55, angle=22)
     out["i"] = with_leaves(I_lat(120), [R], y=825, k=1.35)
     out["j"] = with_leaves(J_lat(W_LO(380)), [W_LO(380) - R], y=825, k=1.35)
     return out
