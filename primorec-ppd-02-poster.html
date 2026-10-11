@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Приморец ППД-02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A3 portrait; margin: 0; }
+
+  :root {
+    --bg: #0b1a2e;
+    --bg-2: #10263f;
+    --line: #2a4a6b;
+    --text: #e8eef5;
+    --muted: #9fb3c8;
+    --accent: #f2b531;
+    --signal: #4fc3f7;
+    --danger: #e5533d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { background: #05101e; }
+
+  body {
+    font-family: 'PT Sans', Arial, sans-serif;
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+
+  .poster {
+    width: 297mm;
+    min-height: 420mm;
+    background:
+      radial-gradient(ellipse at 80% 0%, rgba(79,195,247,.18), transparent 55%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 18mm 18mm 14mm;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* звёзды */
+  .poster::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 12% 8%, #fff8, transparent),
+      radial-gradient(1px 1px at 35% 4%, #fff6, transparent),
+      radial-gradient(1.5px 1.5px at 58% 11%, #fff9, transparent),
+      radial-gradient(1px 1px at 72% 18%, #fff5, transparent),
+      radial-gradient(1px 1px at 90% 6%, #fff7, transparent),
+      radial-gradient(1px 1px at 6% 22%, #fff5, transparent),
+      radial-gradient(1.5px 1.5px at 44% 20%, #fff6, transparent),
+      radial-gradient(1px 1px at 95% 26%, #fff5, transparent);
+    pointer-events: none;
+  }
+
+  .stripe {
+    position: absolute; left: 0; right: 0; top: 0; height: 6mm;
+    background: repeating-linear-gradient(-45deg, var(--accent) 0 8mm, #1a1a1a 8mm 16mm);
+  }
+  .stripe.bottom { top: auto; bottom: 0; }
+
+  header { position: relative; z-index: 1; }
+
+  .kicker {
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: .35em;
+    text-transform: uppercase;
+    color: var(--signal);
+    font-size: 15pt;
+    margin-bottom: 3mm;
+  }
+
+  h1 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 92pt;
+    line-height: .95;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+  }
+  h1 .num {
+    color: var(--accent);
+    display: block;
+    font-size: 64pt;
+  }
+
+  .lead {
+    margin-top: 5mm;
+    font-size: 16pt;
+    color: var(--muted);
+    max-width: 150mm;
+    line-height: 1.35;
+  }
+
+  .hero {
+    position: absolute;
+    top: 14mm; right: 0;
+    width: 165mm;
+    z-index: 0;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 35%);
+            mask-image: linear-gradient(90deg, transparent 0%, #000 35%);
+  }
+
+  .content {
+    position: relative; z-index: 1;
+    margin-top: 34mm;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9mm;
+  }
+
+  .card {
+    background: rgba(8, 20, 36, .72);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--signal);
+    padding: 8mm 9mm;
+    border-radius: 2mm;
+  }
+  .card.warn { border-left-color: var(--danger); grid-column: 1 / -1; }
+
+  .card h2 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 19pt;
+    letter-spacing: .06em;
+    margin-bottom: 4mm;
+    color: var(--text);
+  }
+  .card h2 span { color: var(--signal); margin-right: 3mm; }
+  .card.warn h2 span { color: var(--danger); }
+
+  .card p, .card li { font-size: 14pt; line-height: 1.45; color: #cfdbe7; }
+
+  .card ul { list-style: none; }
+  .card li { padding-left: 7mm; position: relative; margin-bottom: 2.2mm; }
+  .card li::before {
+    content: ""; position: absolute; left: 0; top: 2.6mm;
+    width: 3mm; height: 3mm; background: var(--accent);
+    transform: rotate(45deg);
+  }
+  .card.warn li::before { background: var(--danger); }
+
+  .warn ul { columns: 2; column-gap: 10mm; }
+  .warn li { break-inside: avoid; }
+
+  .chain {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+  .chain .step {
+    flex: 1;
+    text-align: center;
+    padding: 5mm 3mm;
+    background: rgba(79,195,247,.08);
+    border: 1px solid var(--line);
+    font-family: 'Oswald', sans-serif;
+    font-size: 13pt;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .chain .step small {
+    display: block;
+    font-family: 'PT Sans', sans-serif;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 10.5pt;
+    color: var(--muted);
+    margin-top: 1.5mm;
+  }
+  .chain .arrow {
+    width: 10mm;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent);
+    font-size: 20pt;
+  }
+
+  footer {
+    position: relative; z-index: 1;
+    margin-top: auto;
+    padding-top: 10mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 10mm;
+  }
+  .motto {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 34pt;
+    text-transform: uppercase;
+    line-height: 1.05;
+  }
+  .motto em { font-style: normal; color: var(--accent); }
+  .sign {
+    font-size: 11pt;
+    color: var(--muted);
+    text-align: right;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+
+  @media print {
+    html, body { background: none; padding: 0; }
+    body { display: block; }
+    .poster { width: 297mm; height: 420mm; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  @media screen and (max-width: 340mm) {
+    .poster { zoom: calc(100vw / 340mm); }
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="stripe"></div>
+
+  <!-- Иллюстрация: спутник на орбите, земная станция, радиолиния -->
+  <svg class="hero" viewBox="0 0 600 420" aria-hidden="true">
+    <defs>
+      <radialGradient id="earth" cx="50%" cy="0%" r="100%">
+        <stop offset="0%" stop-color="#1f5f8f"/>
+        <stop offset="100%" stop-color="#0b2540"/>
+      </radialGradient>
+      <linearGradient id="beam" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0%" stop-color="#4fc3f7" stop-opacity=".0"/>
+        <stop offset="50%" stop-color="#4fc3f7" stop-opacity=".55"/>
+        <stop offset="100%" stop-color="#4fc3f7" stop-opacity=".0"/>
+      </linearGradient>
+    </defs>
+
+    <!-- орбита -->
+    <ellipse cx="300" cy="470" rx="420" ry="330" fill="none" stroke="#2a4a6b" stroke-width="1.5" stroke-dasharray="6 8"/>
+
+    <!-- спутник -->
+    <g transform="translate(470 70) rotate(-18)">
+      <rect x="-62" y="-12" width="44" height="24" fill="#1d3b5c" stroke="#4fc3f7" stroke-width="1.5"/>
+      <line x1="-62" y1="0" x2="-18" y2="0" stroke="#4fc3f7" stroke-width=".8"/>
+      <line x1="-47" y1="-12" x2="-47" y2="12" stroke="#4fc3f7" stroke-width=".8"/>
+      <line x1="-33" y1="-12" x2="-33" y2="12" stroke="#4fc3f7" stroke-width=".8"/>
+      <rect x="18" y="-12" width="44" height="24" fill="#1d3b5c" stroke="#4fc3f7" stroke-width="1.5"/>
+      <line x1="18" y1="0" x2="62" y2="0" stroke="#4fc3f7" stroke-width=".8"/>
+      <line x1="33" y1="-12" x2="33" y2="12" stroke="#4fc3f7" stroke-width=".8"/>
+      <line x1="47" y1="-12" x2="47" y2="12" stroke="#4fc3f7" stroke-width=".8"/>
+      <rect x="-14" y="-16" width="28" height="32" rx="3" fill="#f2b531"/>
+      <path d="M-8 16 Q0 30 8 16" fill="none" stroke="#e8eef5" stroke-width="2"/>
+    </g>
+
+    <!-- радиолуч -->
+    <polygon points="160,300 205,282 470,80 455,72" fill="url(#beam)"/>
+    <g fill="none" stroke="#4fc3f7" stroke-width="2" stroke-linecap="round" opacity=".9">
+      <path d="M262 222 q14 -4 18 -18"/>
+      <path d="M300 194 q18 -5 23 -23"/>
+      <path d="M340 164 q22 -6 28 -28"/>
+    </g>
+
+    <!-- Земля -->
+    <path d="M0 420 L0 350 Q300 270 600 350 L600 420 Z" fill="url(#earth)"/>
+    <path d="M0 350 Q300 270 600 350" fill="none" stroke="#4fc3f7" stroke-opacity=".5" stroke-width="2"/>
+
+    <!-- земная станция: антенна -->
+    <g transform="translate(175 318)">
+      <rect x="-40" y="10" width="80" height="20" fill="#1a3350" stroke="#2a4a6b"/>
+      <rect x="-6" y="-20" width="12" height="32" fill="#2a4a6b"/>
+      <g transform="rotate(-38)">
+        <path d="M-48 -18 Q0 22 48 -18" fill="#cfdbe7" stroke="#e8eef5" stroke-width="2"/>
+        <line x1="0" y1="2" x2="0" y2="-42" stroke="#e8eef5" stroke-width="2"/>
+        <line x1="-30" y1="-8" x2="0" y2="-42" stroke="#9fb3c8" stroke-width="1.2"/>
+        <line x1="30" y1="-8" x2="0" y2="-42" stroke="#9fb3c8" stroke-width="1.2"/>
+        <circle cx="0" cy="-44" r="4" fill="#f2b531"/>
+      </g>
+    </g>
+    <!-- аппаратная -->
+    <rect x="240" y="312" width="70" height="36" fill="#1a3350" stroke="#2a4a6b"/>
+    <rect x="250" y="320" width="12" height="8" fill="#f2b531" opacity=".8"/>
+    <rect x="268" y="320" width="12" height="8" fill="#4fc3f7" opacity=".8"/>
+    <rect x="286" y="320" width="12" height="8" fill="#4fc3f7" opacity=".5"/>
+    <line x1="215" y1="335" x2="240" y2="335" stroke="#4fc3f7" stroke-dasharray="3 3"/>
+  </svg>
+
+  <header>
+    <div class="kicker">Станция спутниковой связи</div>
+    <h1>Приморец<span class="num">ППД-02</span></h1>
+    <p class="lead">Земная станция системы спутниковой связи «Приморка». Обеспечивает устойчивый обмен информацией через космический сегмент — независимо от расстояния и наземной инфраструктуры.</p>
+  </header>
+
+  <section class="content">
+    <div class="card">
+      <h2><span>01</span>Назначение</h2>
+      <ul>
+        <li>Организация каналов спутниковой связи с центральными и узловыми станциями системы</li>
+        <li>Передача речи, данных и сигналов управления</li>
+        <li>Связь в районах, где нет наземных линий</li>
+        <li>Резервирование наземных каналов связи</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2><span>02</span>Состав станции</h2>
+      <ul>
+        <li>Антенный пост с системой наведения</li>
+        <li>Приёмопередающее оборудование</li>
+        <li>Каналообразующая аппаратура</li>
+        <li>Аппаратура управления и контроля</li>
+        <li>Система электропитания и заземления</li>
+      </ul>
+    </div>
+
+    <div class="chain">
+      <div class="step">Абонент<small>речь, данные</small></div>
+      <div class="arrow">›</div>
+      <div class="step">Аппаратная<small>формирование канала</small></div>
+      <div class="arrow">›</div>
+      <div class="step">Антенна<small>излучение сигнала</small></div>
+      <div class="arrow">›</div>
+      <div class="step">Спутник<small>ретрансляция</small></div>
+      <div class="arrow">›</div>
+      <div class="step">Корреспондент<small>приём сигнала</small></div>
+    </div>
+
+    <div class="card warn">
+      <h2><span>!</span>Меры безопасности</h2>
+      <ul>
+        <li>К работе допускается только обученный персонал, прошедший инструктаж</li>
+        <li>Запрещено находиться в секторе излучения антенны при работе передатчика</li>
+        <li>Перед включением проверить заземление всех элементов станции</li>
+        <li>Не вскрывать блоки оборудования под напряжением</li>
+        <li>При грозе работы на антенном посту прекратить</li>
+        <li>О неисправностях немедленно докладывать начальнику станции</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <div class="motto">Без связи —<br><em>нет управления</em></div>
+    <div class="sign">Земная станция спутниковой связи<br>«Приморец ППД-02»</div>
+  </footer>
+
+  <div class="stripe bottom"></div>
+</div>
+</body>
+</html>
