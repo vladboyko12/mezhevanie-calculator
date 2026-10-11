@@ -5,24 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Приморец ППД-02</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=JetBrains+Mono:wght@400;700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
 <style>
   @page { size: A3 portrait; margin: 0; }
 
   :root {
-    --bg: #0b1a2e;
-    --bg-2: #10263f;
-    --line: #2a4a6b;
-    --text: #e8eef5;
-    --muted: #9fb3c8;
-    --accent: #f2b531;
-    --signal: #4fc3f7;
-    --danger: #e5533d;
+    --space: #050b18;
+    --deep: #081530;
+    --line: #1f3d63;
+    --text: #eaf2fb;
+    --muted: #8ea7c4;
+    --accent: #ffb627;
+    --signal: #38d4ff;
+    --danger: #ff4d3a;
+    --ok: #3dffa2;
+    --mandatory: #1e6fd9;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html, body { background: #05101e; }
+  html, body { background: #02060e; }
 
   body {
     font-family: 'PT Sans', Arial, sans-serif;
@@ -34,321 +35,512 @@
 
   .poster {
     width: 297mm;
-    min-height: 420mm;
-    background:
-      radial-gradient(ellipse at 80% 0%, rgba(79,195,247,.18), transparent 55%),
-      linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    height: 420mm;
     position: relative;
     overflow: hidden;
-    padding: 18mm 18mm 14mm;
-    display: flex;
-    flex-direction: column;
+    background:
+      radial-gradient(ellipse 90% 45% at 75% 12%, rgba(56,212,255,.16), transparent 70%),
+      radial-gradient(ellipse 60% 30% at 10% 30%, rgba(120,80,255,.10), transparent 70%),
+      var(--space);
   }
 
-  /* звёзды */
-  .poster::before {
-    content: "";
-    position: absolute; inset: 0;
-    background-image:
-      radial-gradient(1px 1px at 12% 8%, #fff8, transparent),
-      radial-gradient(1px 1px at 35% 4%, #fff6, transparent),
-      radial-gradient(1.5px 1.5px at 58% 11%, #fff9, transparent),
-      radial-gradient(1px 1px at 72% 18%, #fff5, transparent),
-      radial-gradient(1px 1px at 90% 6%, #fff7, transparent),
-      radial-gradient(1px 1px at 6% 22%, #fff5, transparent),
-      radial-gradient(1.5px 1.5px at 44% 20%, #fff6, transparent),
-      radial-gradient(1px 1px at 95% 26%, #fff5, transparent);
-    pointer-events: none;
-  }
+  /* ---------- сцена ---------- */
+  .scene { position: absolute; left: 0; top: 0; width: 297mm; height: 420mm; }
 
-  .stripe {
-    position: absolute; left: 0; right: 0; top: 0; height: 6mm;
-    background: repeating-linear-gradient(-45deg, var(--accent) 0 8mm, #1a1a1a 8mm 16mm);
-  }
-  .stripe.bottom { top: auto; bottom: 0; }
-
-  header { position: relative; z-index: 1; }
-
-  .kicker {
-    font-family: 'Oswald', sans-serif;
-    letter-spacing: .35em;
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
     text-transform: uppercase;
-    color: var(--signal);
-    font-size: 15pt;
-    margin-bottom: 3mm;
+    letter-spacing: .12em;
   }
+
+  /* HUD-рамка */
+  .corner { position: absolute; width: 14mm; height: 14mm; border: 0 solid var(--signal); opacity: .8; }
+  .corner.tl { top: 8mm; left: 8mm; border-top-width: 2px; border-left-width: 2px; }
+  .corner.tr { top: 8mm; right: 8mm; border-top-width: 2px; border-right-width: 2px; }
+  .corner.bl { bottom: 8mm; left: 8mm; border-bottom-width: 2px; border-left-width: 2px; }
+  .corner.br { bottom: 8mm; right: 8mm; border-bottom-width: 2px; border-right-width: 2px; }
+
+  .ruler {
+    position: absolute; top: 30mm; bottom: 30mm; width: 4mm;
+    background: repeating-linear-gradient(180deg, var(--line) 0 1px, transparent 1px 5mm);
+  }
+  .ruler.l { left: 9mm; }
+  .ruler.r { right: 9mm; }
+  .ruler::after {
+    content: ""; position: absolute; inset: 0;
+    background: repeating-linear-gradient(180deg, var(--signal) 0 1px, transparent 1px 25mm);
+    width: 7mm; opacity: .6;
+  }
+  .ruler.r::after { right: 0; left: auto; }
+
+  .topbar {
+    position: absolute; top: 12mm; left: 26mm; right: 26mm;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 8.5pt; color: var(--muted);
+  }
+  .status { display: flex; align-items: center; gap: 2.5mm; color: var(--ok); }
+  .dot { width: 2.6mm; height: 2.6mm; border-radius: 50%; background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+
+  /* ---------- заголовок ---------- */
+  .ghost {
+    position: absolute; right: 6mm; top: 6mm;
+    font-family: 'Russo One', sans-serif;
+    font-size: 330pt; line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(56,212,255,.22);
+    letter-spacing: -.04em;
+    user-select: none;
+  }
+
+  .title { position: absolute; left: 22mm; top: 30mm; }
+  .kicker { font-size: 11pt; color: var(--signal); margin-bottom: 4mm; }
+  .kicker b { color: var(--accent); font-weight: 700; }
 
   h1 {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 700;
-    font-size: 92pt;
-    line-height: .95;
-    text-transform: uppercase;
-    letter-spacing: .02em;
+    font-family: 'Russo One', sans-serif;
+    font-weight: 400;
+    font-size: 76pt;
+    line-height: .92;
+    letter-spacing: .01em;
+    text-shadow: 0 0 30px rgba(56,212,255,.35);
   }
-  h1 .num {
-    color: var(--accent);
-    display: block;
-    font-size: 64pt;
+  h1 .code {
+    display: inline-flex; align-items: center; gap: 4mm;
+    margin-top: 3mm;
+    font-size: 54pt;
+    color: var(--space);
+    background: var(--accent);
+    padding: 1mm 6mm 2mm;
+    clip-path: polygon(0 0, 100% 0, 100% 70%, calc(100% - 7mm) 100%, 0 100%);
+    text-shadow: none;
   }
 
   .lead {
-    margin-top: 5mm;
-    font-size: 16pt;
-    color: var(--muted);
-    max-width: 150mm;
-    line-height: 1.35;
+    margin-top: 7mm;
+    max-width: 112mm;
+    font-size: 13pt; line-height: 1.4;
+    color: #c4d4e6;
+    border-left: 2px solid var(--accent);
+    padding-left: 5mm;
   }
 
-  .hero {
+  /* ---------- метки на сцене ---------- */
+  .tag {
     position: absolute;
-    top: 14mm; right: 0;
-    width: 165mm;
-    z-index: 0;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 35%);
-            mask-image: linear-gradient(90deg, transparent 0%, #000 35%);
-  }
-
-  .content {
-    position: relative; z-index: 1;
-    margin-top: 34mm;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 9mm;
-  }
-
-  .card {
-    background: rgba(8, 20, 36, .72);
-    border: 1px solid var(--line);
-    border-left: 4px solid var(--signal);
-    padding: 8mm 9mm;
-    border-radius: 2mm;
-  }
-  .card.warn { border-left-color: var(--danger); grid-column: 1 / -1; }
-
-  .card h2 {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 19pt;
-    letter-spacing: .06em;
-    margin-bottom: 4mm;
-    color: var(--text);
-  }
-  .card h2 span { color: var(--signal); margin-right: 3mm; }
-  .card.warn h2 span { color: var(--danger); }
-
-  .card p, .card li { font-size: 14pt; line-height: 1.45; color: #cfdbe7; }
-
-  .card ul { list-style: none; }
-  .card li { padding-left: 7mm; position: relative; margin-bottom: 2.2mm; }
-  .card li::before {
-    content: ""; position: absolute; left: 0; top: 2.6mm;
-    width: 3mm; height: 3mm; background: var(--accent);
-    transform: rotate(45deg);
-  }
-  .card.warn li::before { background: var(--danger); }
-
-  .warn ul { columns: 2; column-gap: 10mm; }
-  .warn li { break-inside: avoid; }
-
-  .chain {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: stretch;
-    gap: 0;
-  }
-  .chain .step {
-    flex: 1;
-    text-align: center;
-    padding: 5mm 3mm;
-    background: rgba(79,195,247,.08);
-    border: 1px solid var(--line);
-    font-family: 'Oswald', sans-serif;
-    font-size: 13pt;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    display: flex; flex-direction: column; justify-content: center;
-  }
-  .chain .step small {
-    display: block;
-    font-family: 'PT Sans', sans-serif;
-    text-transform: none;
-    letter-spacing: 0;
-    font-size: 10.5pt;
-    color: var(--muted);
-    margin-top: 1.5mm;
-  }
-  .chain .arrow {
-    width: 10mm;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--accent);
-    font-size: 20pt;
-  }
-
-  footer {
-    position: relative; z-index: 1;
-    margin-top: auto;
-    padding-top: 10mm;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 10mm;
-  }
-  .motto {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 700;
-    font-size: 34pt;
-    text-transform: uppercase;
-    line-height: 1.05;
-  }
-  .motto em { font-style: normal; color: var(--accent); }
-  .sign {
-    font-size: 11pt;
-    color: var(--muted);
-    text-align: right;
-    line-height: 1.5;
+    font-size: 7.5pt; color: var(--signal);
+    padding: 1.2mm 2.4mm;
+    border: 1px solid rgba(56,212,255,.5);
+    background: rgba(5,11,24,.7);
     white-space: nowrap;
+  }
+  .tag.amber { color: var(--accent); border-color: rgba(255,182,39,.6); }
+
+  /* ---------- контент ---------- */
+  .content {
+    position: absolute; left: 20mm; right: 20mm; top: 194mm;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 5mm;
+  }
+
+  .panel {
+    position: relative;
+    background: linear-gradient(160deg, rgba(10,28,56,.88), rgba(5,12,26,.88));
+    border: 1px solid var(--line);
+    padding: 5.5mm 7mm 5.5mm;
+    clip-path: polygon(0 0, calc(100% - 8mm) 0, 100% 8mm, 100% 100%, 0 100%);
+  }
+  .panel::before {
+    content: ""; position: absolute; top: 0; left: 0; width: 22mm; height: 1mm;
+    background: var(--signal);
+  }
+  .panel h2 {
+    display: flex; align-items: baseline; gap: 3mm;
+    font-family: 'Russo One', sans-serif; font-weight: 400;
+    font-size: 17pt; text-transform: uppercase; letter-spacing: .03em;
+    margin-bottom: 4mm;
+  }
+  .panel h2 .n { font-family: 'JetBrains Mono', monospace; font-size: 10pt; color: var(--signal); }
+
+  .items { list-style: none; display: grid; gap: 2.2mm; }
+  .items li { display: flex; align-items: center; gap: 3.5mm; font-size: 11.5pt; line-height: 1.3; color: #d3e0ee; }
+  .items svg { flex: 0 0 8mm; width: 8mm; height: 8mm; }
+
+  /* радиолиния */
+  .link {
+    grid-column: 1 / -1;
+    position: relative;
+    padding: 4mm 7mm 3mm;
+    border: 1px solid var(--line);
+    background: rgba(5,12,26,.75);
+  }
+  .link .label { position: absolute; top: -2.2mm; left: 6mm; background: var(--space); padding: 0 2mm; font-size: 8pt; color: var(--accent); }
+  .link svg { width: 100%; height: auto; display: block; }
+
+  /* знаки безопасности */
+  .safety { grid-column: 1 / -1; }
+  .safety-head {
+    display: flex; align-items: center; gap: 4mm; margin-bottom: 3mm;
+  }
+  .safety-head h2 { font-family: 'Russo One', sans-serif; font-weight: 400; font-size: 17pt; text-transform: uppercase; }
+  .safety-head .bar { flex: 1; height: 3mm; background: repeating-linear-gradient(-45deg, var(--accent) 0 3mm, transparent 3mm 6mm); opacity: .9; }
+
+  .signs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3mm; }
+  .sign {
+    background: rgba(10,24,46,.85);
+    border: 1px solid var(--line);
+    padding: 3.5mm 2.5mm 3mm;
+    text-align: center;
+  }
+  .sign svg { width: 16mm; height: 16mm; display: block; margin: 0 auto 2.5mm; }
+  .sign p { font-size: 9.3pt; line-height: 1.25; color: #d3e0ee; }
+
+  /* ---------- низ ---------- */
+  .footer {
+    position: absolute; left: 20mm; right: 20mm; bottom: 14mm;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .motto { font-family: 'Russo One', sans-serif; font-size: 30pt; line-height: 1.02; text-transform: uppercase; }
+  .motto em { font-style: normal; color: var(--accent); }
+  .footer .meta { text-align: right; font-size: 7.5pt; color: var(--muted); line-height: 1.8; }
+
+  .pulse { opacity: 0; }
+
+  /* ---------- анимация на экране ---------- */
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .pulse { animation: pulse 2.6s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+    .pulse.d2 { animation-delay: .87s; }
+    .pulse.d3 { animation-delay: 1.73s; }
+    @keyframes pulse { from { transform: scale(.3); opacity: .9; } to { transform: scale(1.6); opacity: 0; } }
+
+    .packet { animation: packet 2.2s linear infinite; }
+    .packet.p2 { animation-delay: .73s; }
+    .packet.p3 { animation-delay: 1.46s; }
+    @keyframes packet { from { offset-distance: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } to { offset-distance: 100%; opacity: 0; } }
+
+    .dot { animation: blink 1.4s steps(2, start) infinite; }
+    @keyframes blink { to { opacity: .25; } }
   }
 
   @media print {
     html, body { background: none; padding: 0; }
     body { display: block; }
-    .poster { width: 297mm; height: 420mm; }
     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 
   @media screen and (max-width: 340mm) {
-    .poster { zoom: calc(100vw / 340mm); }
+    .poster { zoom: calc((100vw - 32px) / 297mm); }
   }
 </style>
 </head>
 <body>
 <div class="poster">
-  <div class="stripe"></div>
 
-  <!-- Иллюстрация: спутник на орбите, земная станция, радиолиния -->
-  <svg class="hero" viewBox="0 0 600 420" aria-hidden="true">
+  <!-- ===================== СЦЕНА ===================== -->
+  <svg class="scene" viewBox="0 0 297 420" preserveAspectRatio="none" aria-hidden="true">
     <defs>
-      <radialGradient id="earth" cx="50%" cy="0%" r="100%">
-        <stop offset="0%" stop-color="#1f5f8f"/>
-        <stop offset="100%" stop-color="#0b2540"/>
+      <radialGradient id="globe" cx="40%" cy="0%" r="75%">
+        <stop offset="0%" stop-color="#1c5fa8"/>
+        <stop offset="35%" stop-color="#0b2a5a"/>
+        <stop offset="100%" stop-color="#040a18"/>
+      </radialGradient>
+      <radialGradient id="atmo" cx="50%" cy="50%" r="50%">
+        <stop offset="93%" stop-color="#38d4ff" stop-opacity="0"/>
+        <stop offset="97%" stop-color="#38d4ff" stop-opacity=".45"/>
+        <stop offset="100%" stop-color="#38d4ff" stop-opacity="0"/>
       </radialGradient>
       <linearGradient id="beam" x1="0" y1="1" x2="1" y2="0">
-        <stop offset="0%" stop-color="#4fc3f7" stop-opacity=".0"/>
-        <stop offset="50%" stop-color="#4fc3f7" stop-opacity=".55"/>
-        <stop offset="100%" stop-color="#4fc3f7" stop-opacity=".0"/>
+        <stop offset="0%" stop-color="#38d4ff" stop-opacity=".05"/>
+        <stop offset="45%" stop-color="#38d4ff" stop-opacity=".45"/>
+        <stop offset="100%" stop-color="#ffb627" stop-opacity=".15"/>
       </linearGradient>
+      <linearGradient id="panelGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#1b4b8a"/>
+        <stop offset="100%" stop-color="#0c2448"/>
+      </linearGradient>
+      <clipPath id="globeClip"><circle cx="148.5" cy="560" r="400"/></clipPath>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="1.6" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
     </defs>
 
-    <!-- орбита -->
-    <ellipse cx="300" cy="470" rx="420" ry="330" fill="none" stroke="#2a4a6b" stroke-width="1.5" stroke-dasharray="6 8"/>
+    <!-- звёзды -->
+    <g fill="#fff">
+      <circle cx="14" cy="26" r=".35" opacity=".7"/><circle cx="40" cy="12" r=".25" opacity=".6"/>
+      <circle cx="66" cy="22" r=".3" opacity=".5"/><circle cx="102" cy="9" r=".4" opacity=".8"/>
+      <circle cx="131" cy="25" r=".25" opacity=".5"/><circle cx="158" cy="15" r=".35" opacity=".7"/>
+      <circle cx="187" cy="30" r=".25" opacity=".6"/><circle cx="212" cy="11" r=".3" opacity=".7"/>
+      <circle cx="246" cy="24" r=".4" opacity=".8"/><circle cx="279" cy="16" r=".3" opacity=".6"/>
+      <circle cx="270" cy="98" r=".3" opacity=".6"/><circle cx="284" cy="132" r=".25" opacity=".5"/>
+      <circle cx="196" cy="128" r=".3" opacity=".5"/><circle cx="20" cy="140" r=".3" opacity=".6"/>
+      <circle cx="140" cy="118" r=".25" opacity=".5"/><circle cx="12" cy="92" r=".35" opacity=".6"/>
+      <circle cx="232" cy="142" r=".3" opacity=".6"/><circle cx="175" cy="70" r=".2" opacity=".5"/>
+    </g>
+
+    <!-- орбиты -->
+    <ellipse cx="148.5" cy="560" rx="470" ry="430" fill="none" stroke="#ffb627" stroke-opacity=".55" stroke-width=".5" stroke-dasharray="3 2.5"/>
+    <ellipse cx="148.5" cy="400" rx="290" ry="330" transform="rotate(-24 148.5 400)" fill="none" stroke="#38d4ff" stroke-opacity=".35" stroke-width=".4" stroke-dasharray="1.2 1.8"/>
+
+    <!-- глобус -->
+    <circle cx="148.5" cy="560" r="412" fill="url(#atmo)"/>
+    <circle cx="148.5" cy="560" r="400" fill="url(#globe)"/>
+    <g clip-path="url(#globeClip)" fill="none" stroke="#38d4ff" stroke-opacity=".16" stroke-width=".35">
+      <ellipse cx="148.5" cy="560" rx="400" ry="385"/>
+      <ellipse cx="148.5" cy="560" rx="400" ry="360"/>
+      <ellipse cx="148.5" cy="560" rx="400" ry="330"/>
+      <ellipse cx="148.5" cy="560" rx="400" ry="295"/>
+      <ellipse cx="148.5" cy="560" rx="400" ry="255"/>
+      <ellipse cx="148.5" cy="560" rx="40" ry="400"/>
+      <ellipse cx="148.5" cy="560" rx="110" ry="400"/>
+      <ellipse cx="148.5" cy="560" rx="180" ry="400"/>
+      <ellipse cx="148.5" cy="560" rx="250" ry="400"/>
+      <ellipse cx="148.5" cy="560" rx="320" ry="400"/>
+      <line x1="148.5" y1="150" x2="148.5" y2="420"/>
+    </g>
+    <path d="M-60 186 Q148.5 128 357 186" fill="none" stroke="#38d4ff" stroke-width=".7" stroke-opacity=".9" filter="url(#glow)"/>
+
+    <!-- луч -->
+    <polygon points="92,150 104,153 234,66 226,58" fill="url(#beam)"/>
+    <path id="beamPath" d="M98 146 L230 62" fill="none" stroke="#38d4ff" stroke-width=".3" stroke-dasharray="1 1.5" opacity=".8"/>
+    <g fill="#ffb627" filter="url(#glow)">
+      <circle class="packet" r="1.1" style="offset-path: path('M98 146 L230 62');" cx="0" cy="0"/>
+      <circle class="packet p2" r="1.1" style="offset-path: path('M98 146 L230 62');" cx="0" cy="0"/>
+      <circle class="packet p3" r="1.1" style="offset-path: path('M98 146 L230 62');" cx="0" cy="0"/>
+    </g>
+    <!-- статичные импульсы (видны и в печати) -->
+    <g fill="none" stroke="#38d4ff" stroke-width=".7" stroke-linecap="round" opacity=".9">
+      <path d="M128 132 q5 -.5 7.5 -5.5"/>
+      <path d="M156 114 q6.5 -.5 9.5 -7"/>
+      <path d="M185 95 q8 -.5 11.5 -8.5"/>
+    </g>
 
     <!-- спутник -->
-    <g transform="translate(470 70) rotate(-18)">
-      <rect x="-62" y="-12" width="44" height="24" fill="#1d3b5c" stroke="#4fc3f7" stroke-width="1.5"/>
-      <line x1="-62" y1="0" x2="-18" y2="0" stroke="#4fc3f7" stroke-width=".8"/>
-      <line x1="-47" y1="-12" x2="-47" y2="12" stroke="#4fc3f7" stroke-width=".8"/>
-      <line x1="-33" y1="-12" x2="-33" y2="12" stroke="#4fc3f7" stroke-width=".8"/>
-      <rect x="18" y="-12" width="44" height="24" fill="#1d3b5c" stroke="#4fc3f7" stroke-width="1.5"/>
-      <line x1="18" y1="0" x2="62" y2="0" stroke="#4fc3f7" stroke-width=".8"/>
-      <line x1="33" y1="-12" x2="33" y2="12" stroke="#4fc3f7" stroke-width=".8"/>
-      <line x1="47" y1="-12" x2="47" y2="12" stroke="#4fc3f7" stroke-width=".8"/>
-      <rect x="-14" y="-16" width="28" height="32" rx="3" fill="#f2b531"/>
-      <path d="M-8 16 Q0 30 8 16" fill="none" stroke="#e8eef5" stroke-width="2"/>
-    </g>
-
-    <!-- радиолуч -->
-    <polygon points="160,300 205,282 470,80 455,72" fill="url(#beam)"/>
-    <g fill="none" stroke="#4fc3f7" stroke-width="2" stroke-linecap="round" opacity=".9">
-      <path d="M262 222 q14 -4 18 -18"/>
-      <path d="M300 194 q18 -5 23 -23"/>
-      <path d="M340 164 q22 -6 28 -28"/>
-    </g>
-
-    <!-- Земля -->
-    <path d="M0 420 L0 350 Q300 270 600 350 L600 420 Z" fill="url(#earth)"/>
-    <path d="M0 350 Q300 270 600 350" fill="none" stroke="#4fc3f7" stroke-opacity=".5" stroke-width="2"/>
-
-    <!-- земная станция: антенна -->
-    <g transform="translate(175 318)">
-      <rect x="-40" y="10" width="80" height="20" fill="#1a3350" stroke="#2a4a6b"/>
-      <rect x="-6" y="-20" width="12" height="32" fill="#2a4a6b"/>
-      <g transform="rotate(-38)">
-        <path d="M-48 -18 Q0 22 48 -18" fill="#cfdbe7" stroke="#e8eef5" stroke-width="2"/>
-        <line x1="0" y1="2" x2="0" y2="-42" stroke="#e8eef5" stroke-width="2"/>
-        <line x1="-30" y1="-8" x2="0" y2="-42" stroke="#9fb3c8" stroke-width="1.2"/>
-        <line x1="30" y1="-8" x2="0" y2="-42" stroke="#9fb3c8" stroke-width="1.2"/>
-        <circle cx="0" cy="-44" r="4" fill="#f2b531"/>
+    <g transform="translate(236 58) rotate(-22)">
+      <circle class="pulse" r="12" fill="none" stroke="#ffb627" stroke-width=".4"/>
+      <circle class="pulse d2" r="12" fill="none" stroke="#ffb627" stroke-width=".4"/>
+      <line x1="-50" y1="0" x2="50" y2="0" stroke="#8ea7c4" stroke-width=".8"/>
+      <g stroke="#38d4ff" stroke-width=".35">
+        <rect x="-50" y="-8" width="36" height="16" fill="url(#panelGrad)"/>
+        <line x1="-41" y1="-8" x2="-41" y2="8"/><line x1="-32" y1="-8" x2="-32" y2="8"/><line x1="-23" y1="-8" x2="-23" y2="8"/>
+        <line x1="-50" y1="0" x2="-14" y2="0"/>
+        <rect x="14" y="-8" width="36" height="16" fill="url(#panelGrad)"/>
+        <line x1="23" y1="-8" x2="23" y2="8"/><line x1="32" y1="-8" x2="32" y2="8"/><line x1="41" y1="-8" x2="41" y2="8"/>
+        <line x1="14" y1="0" x2="50" y2="0"/>
       </g>
+      <rect x="-10" y="-12" width="20" height="24" rx="1.5" fill="#ffb627"/>
+      <rect x="-10" y="-12" width="20" height="24" rx="1.5" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width=".3"/>
+      <line x1="-10" y1="-4" x2="10" y2="-4" stroke="#b37a10" stroke-width=".4"/>
+      <line x1="-10" y1="4" x2="10" y2="4" stroke="#b37a10" stroke-width=".4"/>
+      <path d="M-7 12 Q0 22 7 12" fill="#dfe8f2" stroke="#fff" stroke-width=".4"/>
+      <line x1="0" y1="12" x2="0" y2="19" stroke="#fff" stroke-width=".4"/>
+      <path d="M-5 -12 Q0 -19 5 -12" fill="#dfe8f2"/>
     </g>
-    <!-- аппаратная -->
-    <rect x="240" y="312" width="70" height="36" fill="#1a3350" stroke="#2a4a6b"/>
-    <rect x="250" y="320" width="12" height="8" fill="#f2b531" opacity=".8"/>
-    <rect x="268" y="320" width="12" height="8" fill="#4fc3f7" opacity=".8"/>
-    <rect x="286" y="320" width="12" height="8" fill="#4fc3f7" opacity=".5"/>
-    <line x1="215" y1="335" x2="240" y2="335" stroke="#4fc3f7" stroke-dasharray="3 3"/>
+
+    <!-- земная станция -->
+    <g transform="translate(98 168)">
+      <circle class="pulse" cx="0" cy="-20" r="16" fill="none" stroke="#38d4ff" stroke-width=".4"/>
+      <circle class="pulse d2" cx="0" cy="-20" r="16" fill="none" stroke="#38d4ff" stroke-width=".4"/>
+      <circle class="pulse d3" cx="0" cy="-20" r="16" fill="none" stroke="#38d4ff" stroke-width=".4"/>
+      <!-- основание -->
+      <path d="M-14 0 L14 0 L10 -5 L-10 -5 Z" fill="#0f2747" stroke="#38d4ff" stroke-width=".35"/>
+      <rect x="-2" y="-14" width="4" height="10" fill="#1a3a64" stroke="#38d4ff" stroke-width=".3"/>
+      <!-- зеркало -->
+      <g transform="translate(0 -15) rotate(-33)">
+        <path d="M-17 -5 Q0 9 17 -5 L15 -6.5 Q0 5 -15 -6.5 Z" fill="#9fb6cf"/>
+        <path d="M-17 -5 Q0 9 17 -5" fill="#e6eef7" stroke="#fff" stroke-width=".4"/>
+        <line x1="0" y1="2" x2="0" y2="-15" stroke="#e6eef7" stroke-width=".7"/>
+        <line x1="-11" y1="-2" x2="0" y2="-15" stroke="#8ea7c4" stroke-width=".4"/>
+        <line x1="11" y1="-2" x2="0" y2="-15" stroke="#8ea7c4" stroke-width=".4"/>
+        <circle cx="0" cy="-16" r="1.6" fill="#ffb627" filter="url(#glow)"/>
+      </g>
+      <!-- аппаратная -->
+      <rect x="18" y="-9" width="24" height="9" fill="#0f2747" stroke="#38d4ff" stroke-width=".35"/>
+      <rect x="21" y="-6.5" width="4" height="2.5" fill="#ffb627"/>
+      <rect x="27" y="-6.5" width="4" height="2.5" fill="#38d4ff"/>
+      <rect x="33" y="-6.5" width="4" height="2.5" fill="#3dffa2"/>
+      <line x1="14" y1="-3" x2="18" y2="-3" stroke="#38d4ff" stroke-width=".35" stroke-dasharray=".8 .8"/>
+    </g>
   </svg>
 
-  <header>
-    <div class="kicker">Станция спутниковой связи</div>
-    <h1>Приморец<span class="num">ППД-02</span></h1>
-    <p class="lead">Земная станция системы спутниковой связи «Приморка». Обеспечивает устойчивый обмен информацией через космический сегмент — независимо от расстояния и наземной инфраструктуры.</p>
-  </header>
+  <!-- HUD -->
+  <div class="corner tl"></div><div class="corner tr"></div>
+  <div class="corner bl"></div><div class="corner br"></div>
+  <div class="ruler l"></div><div class="ruler r"></div>
 
+  <div class="topbar mono">
+    <span>Система спутниковой связи «Приморка»</span>
+    <span class="status"><span class="dot"></span>Канал установлен</span>
+  </div>
+
+  <div class="ghost">02</div>
+
+  <!-- метки на сцене -->
+  <div class="tag mono amber" style="left:196mm; top:84mm;">◆ Космический сегмент</div>
+  <div class="tag mono" style="left:42mm; top:180mm;">◆ Земная станция</div>
+  <div class="tag mono" style="left:250mm; top:122mm; transform:rotate(-90deg); transform-origin:left top;">Орбита ГСО / ВЭО</div>
+
+  <!-- заголовок -->
+  <div class="title">
+    <div class="kicker mono">Станция спутниковой связи <b>//</b> ЗССС</div>
+    <h1>ПРИМОРЕЦ<br><span class="code">ППД-02</span></h1>
+    <p class="lead">Земная станция системы спутниковой связи «Приморка». Связь через космос — там, где кончаются провода и дороги.</p>
+  </div>
+
+  <!-- ===================== КОНТЕНТ ===================== -->
   <section class="content">
-    <div class="card">
-      <h2><span>01</span>Назначение</h2>
-      <ul>
-        <li>Организация каналов спутниковой связи с центральными и узловыми станциями системы</li>
-        <li>Передача речи, данных и сигналов управления</li>
-        <li>Связь в районах, где нет наземных линий</li>
-        <li>Резервирование наземных каналов связи</li>
+
+    <div class="panel">
+      <h2><span class="n">[01]</span>Назначение</h2>
+      <ul class="items">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#38d4ff" stroke-width="1.6" stroke-linecap="round"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M7.3 11 16.7 6M7.3 13 16.7 18"/></svg>
+          Каналы связи с центральными и узловыми станциями системы
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#38d4ff" stroke-width="1.6" stroke-linecap="round"><path d="M3 12h3l2-6 4 12 3-9 2 3h4"/></svg>
+          Передача речи, данных и сигналов управления
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#38d4ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20 9 8l4 6 3-4 6 10Z"/><circle cx="18" cy="5" r="2"/></svg>
+          Связь в районах без наземных линий
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#38d4ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
+          Резервирование наземных каналов
+        </li>
       </ul>
     </div>
 
-    <div class="card">
-      <h2><span>02</span>Состав станции</h2>
-      <ul>
-        <li>Антенный пост с системой наведения</li>
-        <li>Приёмопередающее оборудование</li>
-        <li>Каналообразующая аппаратура</li>
-        <li>Аппаратура управления и контроля</li>
-        <li>Система электропитания и заземления</li>
+    <div class="panel">
+      <h2><span class="n">[02]</span>Состав станции</h2>
+      <ul class="items">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ffb627" stroke-width="1.6" stroke-linecap="round"><path d="M4 10a9 9 0 0 0 10 10Z"/><path d="m9 15 7-7M16 5a3 3 0 0 1 3 3M16 1.5A6.5 6.5 0 0 1 22.5 8"/><path d="M6 20h6"/></svg>
+          Антенный пост с системой наведения
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ffb627" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="7" width="18" height="12" rx="1"/><path d="M7 7V4M17 7V4M7 13h4M15 11v4M13 13h4"/></svg>
+          Приёмопередающее оборудование
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ffb627" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="4" width="18" height="5" rx="1"/><rect x="3" y="11" width="18" height="5" rx="1"/><path d="M6 6.5h.01M6 13.5h.01M10 6.5h7M10 13.5h7M8 20h8"/></svg>
+          Каналообразующая аппаратура
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ffb627" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="4" width="18" height="12" rx="1"/><path d="m7 12 3-3 2 2 4-4M9 20h6M12 16v4"/></svg>
+          Аппаратура управления и контроля
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ffb627" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 5 13h6l-1 9 8-12h-6Z"/></svg>
+          Электропитание и заземление
+        </li>
       </ul>
     </div>
 
-    <div class="chain">
-      <div class="step">Абонент<small>речь, данные</small></div>
-      <div class="arrow">›</div>
-      <div class="step">Аппаратная<small>формирование канала</small></div>
-      <div class="arrow">›</div>
-      <div class="step">Антенна<small>излучение сигнала</small></div>
-      <div class="arrow">›</div>
-      <div class="step">Спутник<small>ретрансляция</small></div>
-      <div class="arrow">›</div>
-      <div class="step">Корреспондент<small>приём сигнала</small></div>
+    <!-- радиолиния -->
+    <div class="link">
+      <span class="label mono">// Прохождение сигнала</span>
+      <svg viewBox="0 0 257 40">
+        <path d="M14 22 C 32 14, 50 14, 71 22 S 108 30, 128.5 22 S 165 14, 186 22 S 222 30, 243 22" fill="none" stroke="#38d4ff" stroke-width=".6" stroke-dasharray="1.5 1.2" opacity=".8"/>
+        <g font-family="JetBrains Mono, monospace" text-anchor="middle">
+          <g transform="translate(14 22)">
+            <circle r="6.5" fill="#081530" stroke="#38d4ff" stroke-width=".6"/>
+            <path d="M-2.2 -1.2a2.2 2.2 0 1 0 4.4 0a2.2 2.2 0 1 0-4.4 0M-3.6 3.6a3.6 2.4 0 0 1 7.2 0" fill="none" stroke="#eaf2fb" stroke-width=".6"/>
+          </g>
+          <g transform="translate(71 22)">
+            <circle r="6.5" fill="#081530" stroke="#38d4ff" stroke-width=".6"/>
+            <rect x="-3.5" y="-3" width="7" height="6" fill="none" stroke="#eaf2fb" stroke-width=".6"/>
+            <path d="M-2 -1h4M-2 1h2.5" stroke="#eaf2fb" stroke-width=".5"/>
+          </g>
+          <g transform="translate(128.5 22)">
+            <circle r="6.5" fill="#081530" stroke="#ffb627" stroke-width=".6"/>
+            <path d="M-3.5 0.5a4 4 0 0 0 5 -4.5Z" fill="none" stroke="#eaf2fb" stroke-width=".6"/>
+            <path d="M-0.5 -1.5 2.5 -3.5M2.8 -1a3 3 0 0 1 1 -2.5" fill="none" stroke="#eaf2fb" stroke-width=".5"/>
+          </g>
+          <g transform="translate(186 22)">
+            <circle r="6.5" fill="#081530" stroke="#ffb627" stroke-width=".6"/>
+            <rect x="-1.4" y="-1.8" width="2.8" height="3.6" fill="#ffb627"/>
+            <rect x="-4.6" y="-1.1" width="2.8" height="2.2" fill="none" stroke="#eaf2fb" stroke-width=".5"/>
+            <rect x="1.8" y="-1.1" width="2.8" height="2.2" fill="none" stroke="#eaf2fb" stroke-width=".5"/>
+          </g>
+          <g transform="translate(243 22)">
+            <circle r="6.5" fill="#081530" stroke="#3dffa2" stroke-width=".6"/>
+            <path d="m-2.6 0 1.8 1.8 3.4 -3.6" fill="none" stroke="#3dffa2" stroke-width=".7"/>
+          </g>
+          <g font-size="3.3" fill="#eaf2fb" font-weight="700" letter-spacing=".2">
+            <text x="14" y="36">АБОНЕНТ</text>
+            <text x="71" y="36">АППАРАТНАЯ</text>
+            <text x="128.5" y="36">АНТЕННА</text>
+            <text x="186" y="36">СПУТНИК</text>
+            <text x="243" y="36">КОРРЕСПОНДЕНТ</text>
+          </g>
+          <g font-size="2.5" fill="#8ea7c4">
+            <text x="14" y="10">речь · данные</text>
+            <text x="71" y="10">формирование канала</text>
+            <text x="128.5" y="10">излучение</text>
+            <text x="186" y="10">ретрансляция</text>
+            <text x="243" y="10">приём</text>
+          </g>
+        </g>
+      </svg>
     </div>
 
-    <div class="card warn">
-      <h2><span>!</span>Меры безопасности</h2>
-      <ul>
-        <li>К работе допускается только обученный персонал, прошедший инструктаж</li>
-        <li>Запрещено находиться в секторе излучения антенны при работе передатчика</li>
-        <li>Перед включением проверить заземление всех элементов станции</li>
-        <li>Не вскрывать блоки оборудования под напряжением</li>
-        <li>При грозе работы на антенном посту прекратить</li>
-        <li>О неисправностях немедленно докладывать начальнику станции</li>
-      </ul>
+    <!-- безопасность -->
+    <div class="safety">
+      <div class="safety-head">
+        <h2>Меры безопасности</h2>
+        <div class="bar"></div>
+      </div>
+      <div class="signs">
+        <!-- обязательный: инструктаж -->
+        <div class="sign">
+          <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#1e6fd9" stroke="#fff" stroke-width="1.5"/>
+            <circle cx="17" cy="13" r="4" fill="#fff"/><path d="M9 29c0-5 3.5-8.5 8-8.5s8 3.5 8 8.5Z" fill="#fff"/>
+            <path d="m24 21 3 3 5-6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p>Работать только после инструктажа</p>
+        </div>
+        <!-- предупреждение: излучение -->
+        <div class="sign">
+          <svg viewBox="0 0 40 40"><path d="M20 3 38 35H2Z" fill="#ffb627" stroke="#111" stroke-width="1.5" stroke-linejoin="round"/>
+            <circle cx="14" cy="27" r="2.2" fill="#111"/>
+            <g fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round"><path d="M17.5 23.5a5 5 0 0 1 0 7"/><path d="M20.5 20.5a9 9 0 0 1 0 13"/><path d="M23.5 17.5a13 13 0 0 1 0 19" transform="translate(0 -1.5)"/></g></svg>
+          <p>Не стоять в секторе излучения антенны</p>
+        </div>
+        <!-- обязательный: заземление -->
+        <div class="sign">
+          <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#1e6fd9" stroke="#fff" stroke-width="1.5"/>
+            <g stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M20 8v12M11 20h18M14 25h12M17.5 30h5"/></g></svg>
+          <p>Перед включением проверить заземление</p>
+        </div>
+        <!-- предупреждение: напряжение -->
+        <div class="sign">
+          <svg viewBox="0 0 40 40"><path d="M20 3 38 35H2Z" fill="#ffb627" stroke="#111" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M22 12 14 25h6l-2 7 8-12h-6Z" fill="#111"/></svg>
+          <p>Не вскрывать блоки под напряжением</p>
+        </div>
+        <!-- запрет: гроза -->
+        <div class="sign">
+          <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#fff" stroke="#ff4d3a" stroke-width="4"/>
+            <path d="M11 20a5 5 0 0 1 5-5 6 6 0 0 1 11 1.5 4 4 0 0 1 2 7.5H13a3.5 3.5 0 0 1-2-4Z" fill="#111"/>
+            <path d="m20 24-3 5h3l-1.5 4" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M8 8 32 32" stroke="#ff4d3a" stroke-width="4"/></svg>
+          <p>В грозу — работы на антенном посту запрещены</p>
+        </div>
+        <!-- обязательный: доклад -->
+        <div class="sign">
+          <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#1e6fd9" stroke="#fff" stroke-width="1.5"/>
+            <path d="M10 11h20v13H18l-5 5v-5h-3Z" fill="#fff"/>
+            <path d="M20 14v5" stroke="#1e6fd9" stroke-width="2.4" stroke-linecap="round"/><circle cx="20" cy="21.6" r="1.3" fill="#1e6fd9"/></svg>
+          <p>О неисправностях — доклад начальнику станции</p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <footer>
+  <!-- ===================== НИЗ ===================== -->
+  <div class="footer">
     <div class="motto">Без связи —<br><em>нет управления</em></div>
-    <div class="sign">Земная станция спутниковой связи<br>«Приморец ППД-02»</div>
-  </footer>
-
-  <div class="stripe bottom"></div>
+    <div class="meta mono">ЗССС «Приморец ППД-02»<br>Система «Приморка»<br><span style="color:var(--ok)">● На дежурстве</span></div>
+  </div>
 </div>
 </body>
 </html>
