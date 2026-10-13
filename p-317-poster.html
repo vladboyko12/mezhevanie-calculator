@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Oswald:wght@500;600;700&family=PT+Sans:wght@400;700&family=PT+Mono&display=swap" rel="stylesheet">
 <style>
-  @page { size: A3 landscape; margin: 0; }
+  @page { size: 1200mm 800mm; margin: 0; }
 
   :root {
     --paper: #e7e0c9;
@@ -31,7 +31,7 @@
     padding: 24px 16px;
   }
 
-  .poster { width: 420mm; height: 297mm; position: relative; overflow: hidden; }
+  .poster { width: 420mm; height: 280mm; position: relative; overflow: hidden; }
 
   .camo { position: absolute; inset: 0; width: 100%; height: 100%; }
 
@@ -161,6 +161,7 @@
   .colm .rules { grid-template-columns: 1fr; }
   .colm .rules > div + div { border-left: 0; border-top: .3mm solid var(--rule); }
 
+  @media print { .poster { zoom: 2.857143; } }
   @media print {
     html, body { background: none; padding: 0; }
     body { display: block; }
@@ -221,7 +222,7 @@
       </div>
       <div class="motto-h stencil">Связь — <span>нерв армии</span></div>
     </div>
-    <div class="main" style="--z:1.041;grid-template-columns:1.4fr 1fr 1fr;">
+    <div class="main" style="--z:1.008;grid-template-columns:1.4fr 1fr 1fr;">
       <div class="colm">
 <div class="block scheme">
       <div class="bh"><span class="no">РИС. 1</span>Схема организации связи</div>
