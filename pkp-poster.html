@@ -226,6 +226,32 @@
     .sol h4 { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 11pt; letter-spacing: .04em; text-transform: uppercase; line-height: 1.15; }
     .sol h4 span { color: var(--red); font-family: 'PT Mono', monospace; font-size: 9pt; margin-right: 1.5mm; }
     .sol p { font-size: 10.4pt; line-height: 1.28; margin-top: 1mm; color: #2c3221; }
+  
+    .cat { display: grid; grid-template-columns: 17mm 1fr; border-bottom: .3mm solid var(--rule); }
+    .cat:last-child { border-bottom: 0; }
+    .cat .n { display: grid; place-items: center; font-family: 'Russo One', sans-serif; color: var(--paper); font-size: 20pt; line-height: 1; text-align: center; }
+    .cat .n small { display: block; font-family: 'Oswald', sans-serif; font-size: 7.5pt; letter-spacing: .08em; margin-top: 1mm; }
+    .cat:nth-child(1) .n { background: var(--red); }
+    .cat:nth-child(2) .n { background: #b8641c; }
+    .cat:nth-child(3) .n { background: var(--olive); }
+    .cat .t { padding: 2.6mm 4mm 3mm; }
+    .cat .t b { display: block; font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 10.8pt; text-transform: uppercase; letter-spacing: .02em; line-height: 1.2; }
+    .cat .t ul { list-style: none; margin-top: 1.4mm; }
+    .cat .t li { font-size: 9.8pt; line-height: 1.28; padding-left: 4mm; position: relative; margin-bottom: .8mm; color: #2c3221; }
+    .cat .t li::before { content: "—"; position: absolute; left: 0; color: var(--red); }
+    .phrase { margin: 0 0 3mm; border: .6mm solid var(--ink); background: var(--ink); color: var(--paper); padding: 3mm 4mm; position: relative; }
+    .phrase .lbl { font-family: 'PT Mono', monospace; font-size: 8.5pt; color: var(--gold); text-transform: uppercase; letter-spacing: .08em; }
+    .phrase q { display: block; font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 13pt; line-height: 1.2; margin-top: 1.4mm; quotes: "«" "»"; }
+    .phrase.r { background: var(--red); border-color: var(--red); }
+    .phrase.r .lbl { color: #ffd9a0; }
+    .ptxt { font-size: 10pt; line-height: 1.32; margin-bottom: 2.2mm; }
+    .modes2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5mm; margin-top: 1mm; }
+    .modes2 > div { border: .4mm solid var(--ink); padding: 2.2mm 3mm; }
+    .modes2 b { display: block; font-family: 'Oswald', sans-serif; font-size: 11pt; text-transform: uppercase; }
+    .modes2 span { font-size: 9.6pt; line-height: 1.25; display: block; margin-top: .6mm; }
+    .modes2 .x { background: var(--red); color: var(--paper); border-color: var(--red); }
+    .task { font-size: 10.6pt; line-height: 1.35; padding: 2.6mm 3.5mm; background: rgba(60,74,41,.12); border-left: 1.2mm solid var(--olive); margin-bottom: 3mm; }
+    .task b { color: var(--red); }
   </style>
   <style>h1.two{font-size:60pt!important}.sol{grid-template-columns:1fr 1fr}.sol>div{border-right:.3mm solid var(--rule)!important;border-bottom:.3mm solid var(--rule)!important}.sol>div:nth-child(2n){border-right:0!important}.sol>div:nth-last-child(-n+2){border-bottom:0!important}</style>
   <div class="sheet">
@@ -239,134 +265,132 @@
         <h1 class="two"><span class="stencil">ПКП</span></h1>
         <div class="sub">
           <span class="plate">ПУНКТ КОНТРОЛЯ ПЕРЕГОВОРОВ</span>
-          <span class="what">Контроль соблюдения<br>мер безопасности связи</span>
+          <span class="what">Предотвращение<br>утечки сведений</span>
         </div>
       </div>
       <div class="motto-h stencil">Болтун — <span>находка для врага</span></div>
     </div>
-    <div class="main" style="--z:1.003;grid-template-columns:1.45fr 1fr 1fr;">
+    <div class="main" style="--z:0.928;grid-template-columns:1.3fr 1fr 1fr;">
       <div class="colm">
 <div class="block scheme">
-      <div class="bh"><span class="no">РИС. 1</span>Организация контроля переговоров</div>
+      <div class="bh"><span class="no">РИС. 1</span>Контроль и пресечение нарушений</div>
       <div class="bb">
         <svg viewBox="0 0 249 92" aria-hidden="true">
           <defs><marker id="ar" viewBox="0 0 6 6" refX="5.5" refY="3" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 6 3 0 6Z" fill="#1d2215"/></marker>
           <marker id="arr" viewBox="0 0 6 6" refX="5.5" refY="3" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 6 3 0 6Z" fill="#a3231a"/></marker></defs>
-          <rect x="2" y="8" width="96" height="80" rx="1" fill="none" stroke="#3c4a29" stroke-width=".45" stroke-dasharray="2.2 1.4"/>
-          <text x="4" y="5.5" font-family="Oswald, sans-serif" font-weight="700" font-size="3.8" fill="#3c4a29" letter-spacing=".3">РАДИОСЕТИ И КАНАЛЫ СВОИХ ВОЙСК</text>
           <g font-family="PT Sans, sans-serif" font-size="3" fill="#1d2215" text-anchor="middle">
-            <g stroke="#3c4a29" stroke-width=".5" stroke-dasharray="1.4 1"><line x1="22" y1="26" x2="50" y2="48"/><line x1="78" y1="26" x2="50" y2="48"/><line x1="22" y1="70" x2="50" y2="48"/><line x1="78" y1="70" x2="50" y2="48"/></g>
-            <g transform="translate(50 48)"><circle r="7.5" fill="#3c4a29" stroke="#1d2215" stroke-width=".6"/><text y="1.2" fill="#e7e0c9" font-family="Oswald, sans-serif" font-weight="700" font-size="3.6">КП</text></g>
-            <g transform="translate(22 26)"><circle r="5.5" fill="#e7e0c9" stroke="#1d2215" stroke-width=".6"/><text y="1.1" font-weight="700">1</text></g>
-            <g transform="translate(78 26)"><circle r="5.5" fill="#e7e0c9" stroke="#1d2215" stroke-width=".6"/><text y="1.1" font-weight="700">2</text></g>
-            <g transform="translate(22 70)"><circle r="5.5" fill="#e7e0c9" stroke="#1d2215" stroke-width=".6"/><text y="1.1" font-weight="700">3</text></g>
-            <g transform="translate(78 70)"><rect x="-7" y="-4.5" width="14" height="9" fill="#56653a" stroke="#1d2215" stroke-width=".6"/><text y="1.1" fill="#e7e0c9" font-weight="700" font-size="2.6">Узел св.</text></g>
-            <text x="22" y="16.5" font-size="2.7">радиосеть</text><text x="78" y="16.5" font-size="2.7">радиосеть</text>
-            <text x="22" y="80.5" font-size="2.7">проводной канал</text><text x="78" y="80.5" font-size="2.7">радиорелейный канал</text>
-          </g>
+            <!-- абоненты и канал -->
+            <g transform="translate(16 22)"><circle r="7" fill="#e7e0c9" stroke="#1d2215" stroke-width=".6"/><circle cy="-2" r="2.2" fill="#1d2215"/><path d="M-3.6 3.6a3.6 2.6 0 0 1 7.2 0" fill="#1d2215"/></g>
+            <text x="16" y="34">Абонент</text>
+            <g transform="translate(110 22)"><circle r="7" fill="#e7e0c9" stroke="#1d2215" stroke-width=".6"/><circle cy="-2" r="2.2" fill="#1d2215"/><path d="M-3.6 3.6a3.6 2.6 0 0 1 7.2 0" fill="#1d2215"/></g>
+            <text x="110" y="34">Корреспондент</text>
+            <line x1="23" y1="22" x2="103" y2="22" stroke="#1d2215" stroke-width="1.3"/>
+            <rect x="48" y="16" width="30" height="12" fill="#56653a" stroke="#1d2215" stroke-width=".5"/>
+            <text x="63" y="21.4" fill="#e7e0c9" font-weight="700" font-size="2.8">Коммутатор</text>
+            <text x="63" y="25.2" fill="#e7e0c9" font-size="2.5">открытой связи</text>
+            <text x="63" y="11" font-family="Oswald, sans-serif" font-weight="700" font-size="3.2" fill="#3c4a29">ОТКРЫТЫЙ КАНАЛ / ЛИНИЯ АТС</text>
 
-          <!-- приём на ПКП -->
-          <g fill="none" stroke="#a3231a" stroke-width=".8" stroke-linecap="round">
-            <path d="M104 44a6 6 0 0 1 0 8"/><path d="M108 41a10 10 0 0 1 0 14"/><path d="M112 38a14 14 0 0 1 0 20"/>
-          </g>
-          <line x1="99" y1="48" x2="128" y2="48" stroke="#a3231a" stroke-width=".6" stroke-dasharray="1.4 1" marker-end="url(#arr)"/>
-          <text x="113" y="34" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="3.1" fill="#a3231a">ПРОСЛУШИВАНИЕ</text>
-          <text x="113" y="64" text-anchor="middle" font-family="PT Sans, sans-serif" font-size="2.6" fill="#a3231a">радиообмен, телефон</text>
+            <!-- параллельное включение -->
+            <path d="M88 22 V45" stroke="#a3231a" stroke-width=".8" stroke-dasharray="1.4 1"/>
+            <circle cx="88" cy="22" r="1.4" fill="#a3231a"/>
+            <text x="91" y="41" text-anchor="start" font-size="2.6" fill="#a3231a" font-weight="700">параллельное</text>
+            <text x="91" y="44.3" text-anchor="start" font-size="2.6" fill="#a3231a" font-weight="700">включение</text>
 
-          <!-- ПКП -->
-          <rect x="129" y="30" width="44" height="36" fill="#1d2215"/>
-          <text x="151" y="40" text-anchor="middle" font-family="Russo One, sans-serif" font-size="7" fill="#c9a227">ПКП</text>
-          <g transform="translate(151 50)" fill="none" stroke="#e7e0c9" stroke-width="1.1"><path d="M-6 3v-3a6 6 0 0 1 12 0v3"/><rect x="-7.5" y="2" width="3" height="5" rx="1" fill="#e7e0c9"/><rect x="4.5" y="2" width="3" height="5" rx="1" fill="#e7e0c9"/></g>
-          <text x="151" y="63" text-anchor="middle" font-family="PT Sans, sans-serif" font-size="2.6" fill="#e7e0c9">приём · запись · анализ</text>
+            <!-- ПКП -->
+            <rect x="66" y="45" width="44" height="30" fill="#1d2215"/>
+            <text x="88" y="56" font-family="Russo One, sans-serif" font-size="7" fill="#c9a227">ПКП</text>
+            <g transform="translate(88 64)" fill="none" stroke="#e7e0c9" stroke-width="1.1"><path d="M-5.5 3v-3a5.5 5.5 0 0 1 11 0v3"/><rect x="-7" y="2" width="3" height="5" rx="1" fill="#e7e0c9"/><rect x="4" y="2" width="3" height="5" rx="1" fill="#e7e0c9"/></g>
+            <text x="88" y="81" font-size="2.7">дежурный ПКП: приём · запись · анализ</text>
 
-          <!-- выход -->
-          <g font-family="PT Sans, sans-serif" font-size="2.9" fill="#1d2215">
-            <line x1="173" y1="40" x2="190" y2="26" stroke="#1d2215" stroke-width=".5" marker-end="url(#ar)"/>
-            <line x1="173" y1="48" x2="190" y2="48" stroke="#1d2215" stroke-width=".5" marker-end="url(#ar)"/>
-            <line x1="173" y1="56" x2="190" y2="70" stroke="#1d2215" stroke-width=".5" marker-end="url(#ar)"/>
-            <rect x="191" y="18" width="55" height="15" fill="#e7e0c9" stroke="#1d2215" stroke-width=".6"/>
-            <text x="218.5" y="24.5" text-anchor="middle" font-weight="700">Немедленный доклад</text><text x="218.5" y="29" text-anchor="middle" font-size="2.6" fill="#5c5a46">о грубом нарушении</text>
-            <rect x="191" y="40.5" width="55" height="15" fill="#e7e0c9" stroke="#1d2215" stroke-width=".6"/>
-            <text x="218.5" y="47" text-anchor="middle" font-weight="700">Журнал нарушений</text><text x="218.5" y="51.5" text-anchor="middle" font-size="2.6" fill="#5c5a46">учёт и анализ</text>
-            <rect x="191" y="63" width="55" height="15" fill="#a3231a" stroke="#1d2215" stroke-width=".6"/>
-            <text x="218.5" y="69.5" text-anchor="middle" font-weight="700" fill="#e7e0c9">Доклад командиру</text><text x="218.5" y="74" text-anchor="middle" font-size="2.6" fill="#f3d6cf">меры по устранению</text>
+            <!-- выходы -->
+            <line x1="110" y1="50" x2="140" y2="24" stroke="#a3231a" stroke-width=".55" marker-end="url(#arr)"/>
+            <line x1="110" y1="58" x2="140" y2="50" stroke="#a3231a" stroke-width=".55" marker-end="url(#arr)"/>
+            <line x1="110" y1="68" x2="140" y2="76" stroke="#1d2215" stroke-width=".55" marker-end="url(#ar)"/>
+            <rect x="141" y="15" width="106" height="18" fill="#1d2215"/>
+            <text x="194" y="21.2" fill="#c9a227" font-family="PT Mono, monospace" font-size="2.6">ФРАЗА 1 · ПРИ ПРИЗНАКАХ НАРУШЕНИЯ</text>
+            <text x="194" y="27.8" fill="#e7e0c9" font-family="Oswald, sans-serif" font-weight="700" font-size="3.1">«Вы говорите по открытому каналу связи!»</text>
+            <rect x="141" y="41" width="106" height="18" fill="#a3231a"/>
+            <text x="194" y="47.2" fill="#ffd9a0" font-family="PT Mono, monospace" font-size="2.6">ФРАЗА 2 · ПРИ ПРОДОЛЖЕНИИ НАРУШЕНИЯ</text>
+            <text x="194" y="53.8" fill="#fff" font-family="Oswald, sans-serif" font-weight="700" font-size="3.1">«Вы нарушаете правила ведения переговоров!»</text>
+            <rect x="141" y="67" width="106" height="18" fill="#e7e0c9" stroke="#1d2215" stroke-width=".6"/>
+            <text x="194" y="74" font-weight="700" font-size="3">Журнал · доклад по команде</text>
+            <text x="194" y="79.5" font-size="2.6" fill="#5c5a46">запись нарушения, доклад начальнику узла связи</text>
           </g>
         </svg>
-        <div class="caption">ПКП контролирует переговоры своих войск по средствам связи и выявляет нарушения правил, которые могут привести к утечке сведений</div>
+        <div class="caption">Нарушение считается пресечённым, если после передачи фразы переговоры прекращены или продолжены без нарушений</div>
       </div>
     </div>
 <div class="block red">
-      <div class="bh"><span class="no">РИС. 2</span>Типовые нарушения</div>
-      <div class="sol">
-        <div><svg viewBox="0 0 40 40"><path d="M6 10h28v18H18l-7 6v-6H6Z" fill="#a3231a"/><path d="M12 16h16M12 22h10" stroke="#e7e0c9" stroke-width="2.4"/></svg>
-          <div><h4>Открытый текст</h4><p>Названия частей, задачи, сроки, координаты</p></div></div>
-        <div><svg viewBox="0 0 40 40"><circle cx="20" cy="13" r="7" fill="#1d2215"/><path d="M7 36c0-8 6-13 13-13s13 5 13 13Z" fill="#a3231a"/></svg>
-          <div><h4>Фамилии и звания</h4><p>Вместо позывных — фамилии, должности</p></div></div>
-        <div><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="none" stroke="#1d2215" stroke-width="3"/><path d="M20 10v10l7 5" stroke="#a3231a" stroke-width="3.4" stroke-linecap="round" fill="none"/></svg>
-          <div><h4>Длительные сеансы</h4><p>Лишние разговоры, нарушение радиомолчания</p></div></div>
-        <div><svg viewBox="0 0 40 40"><rect x="13" y="4" width="14" height="30" rx="2" fill="#1d2215"/><rect x="15.5" y="8" width="9" height="16" fill="#a3231a"/></svg>
-          <div><h4>Личные телефоны</h4><p>Служебные вопросы по мобильной связи</p></div></div>
-        <div><svg viewBox="0 0 40 40"><path d="M4 28c4-10 6-10 8 0s4 10 8 0 4-10 8 0 4 10 8 0" fill="none" stroke="#a3231a" stroke-width="3"/><path d="M6 8h28" stroke="#1d2215" stroke-width="3"/></svg>
-          <div><h4>Чужие частоты</h4><p>Работа вне установленных частот и режимов</p></div></div>
-        <div><svg viewBox="0 0 40 40"><rect x="6" y="6" width="28" height="28" rx="2" fill="#e7e0c9" stroke="#1d2215" stroke-width="2"/><path d="M12 12l16 16M28 12 12 28" stroke="#a3231a" stroke-width="3.4"/></svg>
-          <div><h4>Без таблиц</h4><p>Переговоры без переговорных таблиц и кодированных карт</p></div></div>
+      <div class="bh"><span class="no">РИС. 2</span>Классификация нарушений безопасности связи</div>
+      <div>
+        <div class="cat"><div class="n">1<small>КАТ.</small></div><div class="t"><b>Разглашение секретных сведений</b><ul>
+          <li>Открытые или частично открытые переговоры, нарушающие скрытое управление войсками</li>
+          <li>Передача секретных телеграмм (переговоров) или их частей по открытым каналам</li>
+          <li>Передача секретных сведений с помощью радиокодов и переговорных таблиц</li></ul></div></div>
+        <div class="cat"><div class="n">2<small>КАТ.</small></div><div class="t"><b>Предпосылки к утечке секретных сведений</b><ul>
+          <li>Передача некодированных условных обозначений корреспондентов и должностных лиц</li>
+          <li>Переговоры частного характера по открытым каналам связи</li>
+          <li>Открытая передача ключей и переговорных таблиц</li>
+          <li>Повторное использование паролей и адресных групп</li></ul></div></div>
+        <div class="cat"><div class="n">3<small>КАТ.</small></div><div class="t"><b>Утечка сведений служебного характера</b><ul>
+          <li>Передача незакодированных частот, номеров радиосетей и радионаправлений</li>
+          <li>Нарушение порядка использования переговорных таблиц</li>
+          <li>Открытый текст вместо служебных сокращений</li>
+          <li>Ответ на вызов корреспондента позднее 5 минут</li></ul></div></div>
       </div>
     </div>
       </div>
       <div class="colm">
 <div class="block">
-      <div class="bh"><span class="no">01</span>Задачи ПКП</div>
+      <div class="bh"><span class="no">01</span>Боевая задача ПКП</div>
       <div class="bb">
+        <div class="task">Непрерывным поддержанием аппаратуры в боевом состоянии обеспечить <b>контроль переговоров</b>, <b>пресечение утечки сведений</b>, составляющих государственную тайну, и безопасность связи в ходе боевых действий.</div>
         <ul class="threats">
           <li><svg viewBox="0 0 40 40"><circle cx="17" cy="17" r="11" fill="none" stroke="#3c4a29" stroke-width="3.5"/><path d="M25 25l10 10" stroke="#1d2215" stroke-width="4" stroke-linecap="round"/></svg>
-            <div><b>Выявление нарушений</b>Контроль соблюдения правил ведения переговоров</div></li>
+            <div><b>Сбор и анализ</b>Информации о ведении переговоров</div></li>
           <li><svg viewBox="0 0 40 40"><path d="M20 4 6 9v10c0 9 6 14 14 17 8-3 14-8 14-17V9Z" fill="#3c4a29"/><path d="m13 20 5 5 9-10" fill="none" stroke="#c9a227" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <div><b>Предотвращение утечки</b>Пресечение передачи сведений открытым текстом</div></li>
-          <li><svg viewBox="0 0 40 40"><rect x="8" y="4" width="24" height="32" rx="2" fill="#e7e0c9" stroke="#1d2215" stroke-width="2"/><path d="M13 13h14M13 19h14M13 25h9" stroke="#3c4a29" stroke-width="2.4"/></svg>
-            <div><b>Учёт и анализ</b>Ведение журнала, анализ причин нарушений</div></li>
+            <div><b>Предотвращение утечки</b>Принятие оперативных мер и выполнение мероприятий безопасности</div></li>
           <li><svg viewBox="0 0 40 40"><circle cx="20" cy="11" r="6" fill="#1d2215"/><path d="M8 36c0-8 5-13 12-13s12 5 12 13Z" fill="#3c4a29"/><path d="M28 6h8M32 2v8" stroke="#a3231a" stroke-width="2.4"/></svg>
-            <div><b>Доклад командиру</b>Предложения по устранению нарушений</div></li>
-          <li><svg viewBox="0 0 40 40"><rect x="5" y="9" width="30" height="22" rx="2" fill="#3c4a29"/><path d="M12 20h16M20 14v12" stroke="#c9a227" stroke-width="3"/></svg>
-            <div><b>Обучение</b>Разбор нарушений на занятиях с личным составом</div></li>
+            <div><b>Доклады</b>О нарушениях — на вышестоящий пункт управления</div></li>
         </ul>
       </div>
     </div>
-<div class="block">
-      <div class="bh"><span class="no">02</span>Что контролируется</div>
-      <div class="bb">
-        <table class="units">
-          <tr><td class="k" style="width:9mm;">1</td><td class="v">Соблюдение правил радиообмена и установленного регламента</td></tr>
-          <tr><td class="k" style="width:9mm;">2</td><td class="v">Использование позывных и переговорных таблиц</td></tr>
-          <tr><td class="k" style="width:9mm;">3</td><td class="v">Отсутствие служебных сведений в открытом тексте</td></tr>
-          <tr><td class="k" style="width:9mm;">4</td><td class="v">Длительность сеансов и режим радиомолчания</td></tr>
-          <tr><td class="k" style="width:9mm;">5</td><td class="v">Работа на установленных частотах и в установленных режимах</td></tr>
-        </table>
-      </div>
+<div class="block red">
+      <div class="bh"><span class="no">02</span>Запрещается по открытым каналам и АТС</div>
+      <div class="rules"><div class="no"><ol>
+        <li>Указывать предназначение, наименования частей и подразделений, их боевую готовность, принадлежность к виду ВС и роду войск</li>
+        <li>Сообщать о планируемых действиях войск, перемещениях командования, перелётах</li>
+        <li>Обращаться по должности и званию, упоминать должности и звания других лиц</li>
+        <li>Упоминать, что сведения передавались по закрытым каналам; задавать вопросы, ответ на которые содержит секретные сведения</li>
+        <li>Раскрывать значения сигналов</li>
+        <li>Одновременно вести переговоры по ЗАС (АТС-Р) и открытой связи (АТС-О)</li>
+      </ol></div></div>
     </div>
       </div>
       <div class="colm">
-<div class="block red">
-      <div class="bh"><span class="no">03</span>Требования к ведению переговоров</div>
-      <div class="rules">
-        <div class="no">
-          <h3>ЗАПРЕЩАЕТСЯ:</h3>
-          <ol>
-            <li>Передавать служебные сведения открытым текстом</li>
-            <li>Называть фамилии, должности, номера частей</li>
-            <li>Вести переговоры, не относящиеся к делу</li>
-            <li>Обсуждать служебные вопросы по личному телефону</li>
-          </ol>
+<div class="block">
+      <div class="bh"><span class="no">03</span>Пресечение нарушений</div>
+      <div class="bb">
+        <div class="phrase"><div class="lbl">При признаках нарушения</div><q>Внимание! Говорит дежурный пункта контроля! Вы говорите по открытому каналу связи!</q></div>
+        <div class="phrase r"><div class="lbl">При продолжении нарушения</div><q>Внимание! Говорит дежурный пункта контроля! Вы нарушаете правила ведения переговоров!</q></div>
+        <div class="ptxt" style="font-family:'Oswald',sans-serif;font-weight:600;text-transform:uppercase;font-size:10.5pt;margin-top:3mm;">Режимы ПД ТСР</div>
+        <div class="modes2">
+          <div class="x"><b>«Особый»</b><span>Передача информации по открытым каналам связи <strong>запрещена</strong></span></div>
+          <div><b>«Ограничительный»</b><span>Передача информации по открытым каналам связи <strong>ограничена</strong></span></div>
         </div>
-        <div class="yes">
-          <h3>ОБЯЗАН:</h3>
-          <ol>
-            <li>Пользоваться позывными и переговорными таблицами</li>
-            <li>Вести переговоры кратко, только по делу</li>
-            <li>Помнить: все переговоры контролируются</li>
-            <li>Выполнять указания ПКП и устранять нарушения</li>
-          </ol>
-        </div>
+        <p class="ptxt" style="margin-top:2.6mm;">Если параллельное включение невозможно — пресечение через дежурную смену коммутатора открытой связи <b>путём разъединения абонентов</b>, не ожидая окончания переговоров.</p>
       </div>
+    </div>
+<div class="block">
+      <div class="bh"><span class="no">04</span>Дежурный ПКП обязан</div>
+      <div class="rules"><div class="yes"><ol>
+        <li>Постоянно находиться на боевом посту</li>
+        <li>Осуществлять контроль за ходом переговоров действующих и резервных каналов</li>
+        <li>Незамедлительно пресекать нарушения безопасности связи</li>
+        <li>Записывать в журнал время и выявленные нарушения</li>
+        <li>Докладывать о всех нарушениях начальнику узла связи</li>
+        <li>При неисправности — устранить, доложить, записать время восстановления</li>
+      </ol></div></div>
     </div>
       </div>
     </div>
