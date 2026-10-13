@@ -226,6 +226,47 @@
     .sol h4 { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 11pt; letter-spacing: .04em; text-transform: uppercase; line-height: 1.15; }
     .sol h4 span { color: var(--red); font-family: 'PT Mono', monospace; font-size: 9pt; margin-right: 1.5mm; }
     .sol p { font-size: 10.4pt; line-height: 1.28; margin-top: 1mm; color: #2c3221; }
+  
+    .cat { display: grid; grid-template-columns: 17mm 1fr; border-bottom: .3mm solid var(--rule); }
+    .cat:last-child { border-bottom: 0; }
+    .cat .n { display: grid; place-items: center; font-family: 'Russo One', sans-serif; color: var(--paper); font-size: 20pt; line-height: 1; text-align: center; }
+    .cat .n small { display: block; font-family: 'Oswald', sans-serif; font-size: 7.5pt; letter-spacing: .08em; margin-top: 1mm; }
+    .cat:nth-child(1) .n { background: var(--red); }
+    .cat:nth-child(2) .n { background: #b8641c; }
+    .cat:nth-child(3) .n { background: var(--olive); }
+    .cat .t { padding: 2.6mm 4mm 3mm; }
+    .cat .t b { display: block; font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 10.8pt; text-transform: uppercase; letter-spacing: .02em; line-height: 1.2; }
+    .cat .t ul { list-style: none; margin-top: 1.4mm; }
+    .cat .t li { font-size: 9.8pt; line-height: 1.28; padding-left: 4mm; position: relative; margin-bottom: .8mm; color: #2c3221; }
+    .cat .t li::before { content: "—"; position: absolute; left: 0; color: var(--red); }
+    .phrase { margin: 0 0 3mm; border: .6mm solid var(--ink); background: var(--ink); color: var(--paper); padding: 3mm 4mm; position: relative; }
+    .phrase .lbl { font-family: 'PT Mono', monospace; font-size: 8.5pt; color: var(--gold); text-transform: uppercase; letter-spacing: .08em; }
+    .phrase q { display: block; font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 13pt; line-height: 1.2; margin-top: 1.4mm; quotes: "«" "»"; }
+    .phrase.r { background: var(--red); border-color: var(--red); }
+    .phrase.r .lbl { color: #ffd9a0; }
+    .ptxt { font-size: 10pt; line-height: 1.32; margin-bottom: 2.2mm; }
+    .modes2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5mm; margin-top: 1mm; }
+    .modes2 > div { border: .4mm solid var(--ink); padding: 2.2mm 3mm; }
+    .modes2 b { display: block; font-family: 'Oswald', sans-serif; font-size: 11pt; text-transform: uppercase; }
+    .modes2 span { font-size: 9.6pt; line-height: 1.25; display: block; margin-top: .6mm; }
+    .modes2 .x { background: var(--red); color: var(--paper); border-color: var(--red); }
+    .task { font-size: 10.6pt; line-height: 1.35; padding: 2.6mm 3.5mm; background: rgba(60,74,41,.12); border-left: 1.2mm solid var(--olive); margin-bottom: 3mm; }
+    .task b { color: var(--red); }
+  
+    .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+    .tile { border: .6mm solid var(--ink); padding: 3mm 4mm; text-align: center; }
+    .tile.d { background: var(--ink); color: var(--paper); }
+    .tile .big { font-family: 'Russo One', sans-serif; font-size: 30pt; line-height: 1; color: var(--red); }
+    .tile.d .big { color: var(--gold); }
+    .tile .big small { font-size: 14pt; }
+    .tile p { font-family: 'Oswald', sans-serif; font-weight: 600; text-transform: uppercase; font-size: 10.5pt; letter-spacing: .05em; margin-top: 1.6mm; }
+    .meet { margin-top: 3mm; display: grid; grid-template-columns: 10mm 1fr; gap: 3mm; align-items: center; font-size: 10.6pt; line-height: 1.3; border-top: .3mm solid var(--rule); padding-top: 3mm; }
+    .meet svg { width: 10mm; height: 10mm; }
+    .ctrl { width: 100%; border-collapse: collapse; }
+    .ctrl td { padding: 2.2mm 1mm; border-bottom: .3mm solid var(--rule); font-size: 10.6pt; vertical-align: middle; }
+    .ctrl tr:last-child td { border-bottom: 0; }
+    .ctrl td.f { font-family: 'Oswald', sans-serif; font-weight: 700; text-transform: uppercase; color: var(--red); white-space: nowrap; text-align: right; font-size: 11pt; }
+    .sub2 { font-family: 'Oswald', sans-serif; font-weight: 600; text-transform: uppercase; font-size: 10.5pt; letter-spacing: .04em; margin: 3mm 0 1.6mm; color: var(--olive); }
   </style>
   <style>h1.two{font-size:60pt!important}.sol{grid-template-columns:1fr 1fr}.sol>div{border-right:.3mm solid var(--rule)!important;border-bottom:.3mm solid var(--rule)!important}.sol>div:nth-child(2n){border-right:0!important}.sol>div:nth-last-child(-n+2){border-bottom:0!important}.head .motto-h{font-size:19pt;white-space:nowrap}.head .plate{font-size:18pt}</style>
   <div class="sheet">
@@ -238,143 +279,145 @@
       <div>
         <h1 class="two"><span class="stencil">АВК</span></h1>
         <div class="sub">
-          <span class="plate">АВАРИЙНО-ВОССТАНОВИТЕЛЬНАЯ КОМАНДА</span>
-          <span class="what">Восстановление<br>связи в срок</span>
+          <span class="plate">АВАРИЙНО-ВОССТАНОВИТЕЛЬНАЯ КОМАНДА УС и ПИ</span>
         </div>
       </div>
       <div class="motto-h stencil">Связь восстановлена —<br><span>задача выполнена</span></div>
     </div>
-    <div class="main" style="--z:0.978;grid-template-columns:1.45fr 1fr 1fr;">
+    <div class="main" style="--z:0.858;grid-template-columns:1.35fr 1fr 1fr;">
       <div class="colm">
 <div class="block scheme">
-      <div class="bh"><span class="no">РИС. 1</span>Порядок действий АВК</div>
+      <div class="bh"><span class="no">РИС. 1</span>Порядок аварийно-восстановительных работ</div>
       <div class="bb">
         <svg viewBox="0 0 249 76" aria-hidden="true">
           <defs><marker id="arr" viewBox="0 0 6 6" refX="5.5" refY="3" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0 6 3 0 6Z" fill="#a3231a"/></marker></defs>
           <g fill="none" stroke="#9a7b4f" stroke-width=".25" opacity=".45"><path d="M69.5 30.0 L70.1 30.8 L70.6 31.8 L70.9 32.8 L70.7 33.8 L69.8 34.7 L68.5 35.3 L66.9 35.6 L65.2 35.6 L63.6 35.5 L62.2 35.2 L61.1 35.0 L60.0 34.9 L59.0 34.7 L58.1 34.5 L57.1 34.3 L56.3 34.0 L55.4 33.7 L54.5 33.5 L53.3 33.2 L51.9 32.9 L50.5 32.5 L49.1 31.8 L48.1 31.0 L47.7 30.0 L48.0 29.0 L48.8 28.1 L50.0 27.4 L51.2 26.8 L52.3 26.3 L53.3 25.8 L54.3 25.3 L55.3 24.9 L56.4 24.5 L57.6 24.3 L58.8 24.3 L60.0 24.5 L61.1 24.7 L62.1 25.0 L63.2 25.2 L64.3 25.4 L65.4 25.6 L66.4 26.0 L67.3 26.5 L67.9 27.1 L68.4 27.8 L68.7 28.5 L69.0 29.3Z"/><path d="M79.1 30.0 L80.2 31.7 L81.3 33.6 L81.8 35.6 L81.3 37.7 L79.7 39.4 L77.1 40.7 L73.8 41.2 L70.4 41.3 L67.2 40.9 L64.5 40.5 L62.1 40.1 L60.0 39.8 L58.0 39.5 L56.1 39.1 L54.3 38.6 L52.6 38.0 L50.8 37.5 L48.9 36.9 L46.6 36.4 L43.8 35.8 L40.9 34.9 L38.2 33.7 L36.3 32.0 L35.5 30.0 L36.0 28.0 L37.7 26.3 L39.9 24.8 L42.4 23.6 L44.7 22.6 L46.7 21.7 L48.5 20.7 L50.5 19.7 L52.7 19.0 L55.1 18.6 L57.6 18.6 L60.0 19.0 L62.2 19.5 L64.3 20.0 L66.4 20.4 L68.5 20.8 L70.7 21.3 L72.8 22.0 L74.6 23.0 L75.9 24.3 L76.8 25.7 L77.4 27.1 L78.1 28.5Z"/><path d="M88.6 30.0 L90.3 32.5 L91.9 35.3 L92.7 38.5 L92.0 41.5 L89.5 44.2 L85.6 46.0 L80.7 46.9 L75.6 46.9 L70.9 46.4 L66.7 45.7 L63.2 45.1 L60.0 44.6 L57.0 44.2 L54.2 43.6 L51.4 42.9 L48.9 42.0 L46.3 41.2 L43.4 40.4 L39.9 39.7 L35.8 38.7 L31.4 37.4 L27.3 35.5 L24.4 32.9 L23.2 30.0 L24.0 27.0 L26.5 24.4 L29.9 22.2 L33.6 20.5 L37.0 19.0 L40.0 17.5 L42.8 16.0 L45.8 14.6 L49.1 13.5 L52.7 12.9 L56.4 13.0 L60.0 13.5 L63.3 14.2 L66.4 15.0 L69.5 15.6 L72.8 16.2 L76.1 16.9 L79.2 18.0 L81.9 19.5 L83.8 21.4 L85.1 23.5 L86.1 25.6 L87.1 27.8Z"/><path d="M98.1 30.0 L100.5 33.3 L102.6 37.1 L103.6 41.3 L102.6 45.4 L99.4 48.9 L94.1 51.3 L87.6 52.5 L80.8 52.5 L74.5 51.9 L69.0 51.0 L64.2 50.2 L60.0 49.5 L56.0 48.9 L52.2 48.2 L48.6 47.2 L45.2 46.1 L41.7 44.9 L37.8 43.9 L33.2 42.9 L27.7 41.7 L21.8 39.9 L16.4 37.3 L12.5 33.9 L11.0 30.0 L12.1 26.1 L15.3 22.5 L19.9 19.6 L24.8 17.3 L29.3 15.3 L33.3 13.3 L37.1 11.3 L41.0 9.5 L45.4 8.0 L50.2 7.2 L55.2 7.3 L60.0 8.0 L64.4 9.0 L68.6 10.0 L72.7 10.8 L77.0 11.6 L81.4 12.6 L85.6 14.0 L89.2 16.0 L91.8 18.5 L93.5 21.3 L94.8 24.2 L96.2 27.0Z"/><path d="M107.7 30.0 L110.6 34.2 L113.2 38.9 L114.5 44.1 L113.3 49.2 L109.2 53.6 L102.7 56.7 L94.5 58.1 L86.0 58.2 L78.1 57.3 L71.2 56.2 L65.3 55.2 L60.0 54.4 L55.0 53.7 L50.3 52.7 L45.7 51.5 L41.5 50.1 L37.1 48.6 L32.3 47.3 L26.5 46.1 L19.6 44.6 L12.3 42.4 L5.5 39.1 L0.7 34.9 L-1.3 30.0 L0.1 25.1 L4.2 20.6 L9.9 17.0 L16.0 14.1 L21.6 11.6 L26.7 9.2 L31.4 6.7 L36.3 4.3 L41.8 2.5 L47.8 1.5 L54.0 1.6 L60.0 2.5 L65.5 3.7 L70.7 5.0 L75.9 6.0 L81.3 7.0 L86.8 8.2 L92.0 10.0 L96.5 12.5 L99.7 15.7 L101.9 19.2 L103.5 22.7 L105.2 26.3Z"/><path d="M117.2 30.0 L120.7 35.0 L123.9 40.7 L125.4 46.9 L124.0 53.1 L119.1 58.3 L111.2 62.0 L101.4 63.7 L91.2 63.8 L81.7 62.8 L73.5 61.4 L66.4 60.2 L60.0 59.3 L54.0 58.4 L48.3 57.3 L42.9 55.8 L37.7 54.1 L32.5 52.4 L26.7 50.8 L19.7 49.3 L11.5 47.5 L2.7 44.8 L-5.4 41.0 L-11.2 35.9 L-13.5 30.0 L-11.9 24.1 L-7.0 18.8 L-0.2 14.4 L7.2 10.9 L14.0 7.9 L20.0 5.0 L25.6 2.0 L31.5 -0.8 L38.1 -3.0 L45.4 -4.2 L52.8 -4.1 L60.0 -3.0 L66.6 -1.5 L72.9 -0.0 L79.1 1.2 L85.5 2.4 L92.1 3.8 L98.4 6.0 L103.8 9.0 L107.7 12.8 L110.3 17.0 L112.2 21.3 L114.3 25.5Z"/><path d="M199.0 55.0 L200.0 55.8 L200.6 56.8 L200.7 57.8 L200.2 58.7 L199.3 59.5 L198.2 60.1 L196.9 60.7 L195.6 61.1 L194.2 61.4 L192.8 61.5 L191.3 61.4 L190.0 61.1 L188.8 60.6 L187.9 60.0 L187.0 59.5 L186.2 59.1 L185.3 58.8 L184.3 58.6 L183.1 58.3 L182.0 57.9 L181.1 57.3 L180.6 56.6 L180.6 55.8 L180.8 55.0 L181.1 54.3 L181.3 53.5 L181.4 52.8 L181.5 51.9 L181.8 51.0 L182.3 50.2 L183.1 49.4 L184.3 48.9 L185.7 48.5 L187.2 48.4 L188.6 48.4 L190.0 48.5 L191.3 48.6 L192.6 48.9 L193.7 49.3 L194.6 50.0 L195.2 50.8 L195.5 51.6 L195.6 52.3 L195.7 52.9 L196.1 53.4 L196.8 53.9 L197.8 54.4Z"/><path d="M208.0 55.0 L210.1 56.7 L211.3 58.6 L211.4 60.5 L210.4 62.4 L208.7 64.0 L206.4 65.3 L203.9 66.3 L201.2 67.1 L198.4 67.7 L195.6 68.0 L192.7 67.8 L190.0 67.1 L187.7 66.1 L185.7 65.0 L184.1 63.9 L182.5 63.1 L180.7 62.6 L178.5 62.2 L176.2 61.6 L173.9 60.8 L172.2 59.6 L171.3 58.1 L171.1 56.6 L171.5 55.0 L172.1 53.5 L172.6 52.1 L172.8 50.6 L173.0 48.9 L173.5 47.1 L174.6 45.3 L176.3 43.8 L178.7 42.7 L181.4 42.1 L184.3 41.8 L187.2 41.8 L190.0 41.9 L192.7 42.3 L195.2 42.8 L197.5 43.7 L199.3 45.0 L200.4 46.5 L201.0 48.1 L201.1 49.7 L201.4 50.9 L202.1 51.9 L203.6 52.7 L205.7 53.7Z"/><path d="M217.0 55.0 L220.1 57.5 L221.9 60.3 L222.1 63.3 L220.7 66.1 L218.0 68.4 L214.6 70.4 L210.8 72.0 L206.8 73.2 L202.7 74.1 L198.4 74.5 L194.0 74.2 L190.0 73.2 L186.5 71.7 L183.6 70.0 L181.1 68.4 L178.7 67.2 L176.0 66.4 L172.8 65.8 L169.2 65.0 L165.9 63.7 L163.3 61.9 L161.9 59.7 L161.7 57.3 L162.3 55.0 L163.2 52.8 L163.9 50.6 L164.2 48.3 L164.5 45.8 L165.3 43.1 L166.8 40.5 L169.4 38.3 L173.0 36.6 L177.2 35.6 L181.5 35.2 L185.8 35.2 L190.0 35.4 L194.0 35.9 L197.8 36.7 L201.2 38.0 L203.9 39.9 L205.6 42.3 L206.5 44.7 L206.7 47.0 L207.1 48.8 L208.2 50.3 L210.4 51.6 L213.5 53.1Z"/><path d="M226.0 55.0 L230.1 58.3 L232.6 62.1 L232.8 66.1 L230.9 69.8 L227.4 72.9 L222.8 75.5 L217.8 77.6 L212.4 79.3 L206.9 80.5 L201.1 81.0 L195.4 80.6 L190.0 79.3 L185.3 77.3 L181.4 75.0 L178.2 72.9 L175.0 71.3 L171.3 70.2 L167.0 69.4 L162.3 68.3 L157.9 66.6 L154.4 64.2 L152.6 61.3 L152.3 58.1 L153.1 55.0 L154.2 52.1 L155.1 49.2 L155.6 46.1 L156.1 42.8 L157.0 39.2 L159.1 35.7 L162.6 32.7 L167.3 30.5 L172.9 29.1 L178.7 28.6 L184.4 28.6 L190.0 28.9 L195.4 29.5 L200.5 30.6 L205.0 32.4 L208.6 34.9 L210.9 38.0 L211.9 41.3 L212.3 44.3 L212.8 46.8 L214.2 48.7 L217.1 50.5 L221.3 52.4Z"/><path d="M235.1 55.0 L240.2 59.1 L243.2 63.9 L243.5 68.8 L241.1 73.4 L236.7 77.4 L231.0 80.6 L224.7 83.3 L218.1 85.4 L211.1 86.8 L203.9 87.5 L196.7 87.0 L190.0 85.3 L184.1 82.8 L179.3 80.0 L175.2 77.3 L171.2 75.4 L166.7 74.0 L161.3 72.9 L155.4 71.6 L149.8 69.5 L145.6 66.5 L143.2 62.8 L142.8 58.9 L143.8 55.0 L145.3 51.3 L146.4 47.7 L147.1 43.9 L147.6 39.7 L148.8 35.2 L151.4 30.9 L155.7 27.1 L161.7 24.3 L168.6 22.7 L175.9 22.0 L183.0 22.0 L190.0 22.4 L196.7 23.1 L203.1 24.5 L208.7 26.7 L213.2 29.9 L216.1 33.8 L217.4 37.9 L217.9 41.6 L218.5 44.7 L220.3 47.2 L223.9 49.3 L229.2 51.8Z"/><path d="M244.1 55.0 L250.2 60.0 L253.8 65.7 L254.2 71.6 L251.3 77.1 L246.0 81.9 L239.2 85.8 L231.6 88.9 L223.7 91.4 L215.3 93.2 L206.7 94.0 L198.1 93.4 L190.0 91.4 L183.0 88.4 L177.2 84.9 L172.2 81.8 L167.4 79.4 L162.0 77.8 L155.5 76.5 L148.5 74.9 L141.8 72.4 L136.7 68.8 L133.8 64.4 L133.4 59.7 L134.6 55.0 L136.3 50.6 L137.7 46.2 L138.5 41.7 L139.1 36.6 L140.5 31.3 L143.7 26.0 L148.9 21.5 L156.0 18.2 L164.3 16.2 L173.0 15.4 L181.7 15.4 L190.0 15.8 L198.1 16.8 L205.7 18.4 L212.5 21.1 L217.8 24.9 L221.3 29.5 L222.9 34.4 L223.4 39.0 L224.1 42.7 L226.3 45.6 L230.7 48.2 L237.0 51.1Z"/></g>
-          <text x="124.5" y="10" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="4" fill="#a3231a" letter-spacing=".4">ВРЕМЯ ВОССТАНОВЛЕНИЯ — МИНИМАЛЬНОЕ</text>
+          <text x="124.5" y="10" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="4" fill="#a3231a" letter-spacing=".4">РАБОТЫ ВЕДУТСЯ НЕПРЕРЫВНО (ПОСМЕННО) ДО ВВОДА В ШТАТНЫЙ РЕЖИМ</text>
           <path d="M20 14.5 H229" stroke="#a3231a" stroke-width=".5" stroke-dasharray="2 1.4" marker-end="url(#arr)"/>
           <g transform="translate(2.0 0)">
             <rect x="0" y="22" width="34" height="34" fill="#e7e0c9" stroke="#1d2215" stroke-width=".6"/>
             <rect x="0" y="22" width="34" height="6.5" fill="#1d2215"/>
             <text x="3" y="26.8" font-family="PT Mono, monospace" font-size="3.2" fill="#c9a227" font-weight="700">01</text>
             <g transform="translate(17 40)"><path d="M-8 4h16l-8-13Z" fill="#c9a227" stroke="#1d2215" stroke-width=".8"/><rect x="-.8" y="-4" width="1.6" height="4.5" fill="#1d2215"/><circle cy="2.2" r=".9" fill="#1d2215"/></g>
-            <text x="17" y="64" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="3.4" fill="#1d2215">Сигнал</text>
-            <text x="17" y="68.5" text-anchor="middle" font-family="PT Sans, sans-serif" font-size="2.6" fill="#5c5a46">потеря связи</text>
+            <text x="17" y="64" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="3.4" fill="#1d2215">Авария</text>
+            <text x="17" y="68.5" text-anchor="middle" font-family="PT Sans, sans-serif" font-size="2.6" fill="#5c5a46">расчёт не устранил</text>
           </g><path d="M37.0 39 h5" stroke="#a3231a" stroke-width="1" marker-end="url(#arr)"/><g transform="translate(43.5 0)">
             <rect x="0" y="22" width="34" height="34" fill="#e7e0c9" stroke="#1d2215" stroke-width=".6"/>
             <rect x="0" y="22" width="34" height="6.5" fill="#1d2215"/>
             <text x="3" y="26.8" font-family="PT Mono, monospace" font-size="3.2" fill="#c9a227" font-weight="700">02</text>
             <g transform="translate(17 40)"><rect x="-10" y="-4" width="15" height="8" fill="#3c4a29"/><path d="M5 -2h4l2.5 3v3H5Z" fill="#56653a"/><circle cx="-6" cy="5" r="2" fill="#1d2215"/><circle cx="6" cy="5" r="2" fill="#1d2215"/></g>
-            <text x="17" y="64" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="3.4" fill="#1d2215">Выезд</text>
-            <text x="17" y="68.5" text-anchor="middle" font-family="PT Sans, sans-serif" font-size="2.6" fill="#5c5a46">по тревоге</text>
+            <text x="17" y="64" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="3.4" fill="#1d2215">Сбор АВК</text>
+            <text x="17" y="68.5" text-anchor="middle" font-family="PT Sans, sans-serif" font-size="2.6" fill="#5c5a46">место развода расчётов</text>
           </g><path d="M78.5 39 h5" stroke="#a3231a" stroke-width="1" marker-end="url(#arr)"/><g transform="translate(85.0 0)">
             <rect x="0" y="22" width="34" height="34" fill="#e7e0c9" stroke="#1d2215" stroke-width=".6"/>
             <rect x="0" y="22" width="34" height="6.5" fill="#1d2215"/>
             <text x="3" y="26.8" font-family="PT Mono, monospace" font-size="3.2" fill="#c9a227" font-weight="700">03</text>
             <g transform="translate(17 40)"><circle cx="-2" cy="-2" r="6" fill="none" stroke="#3c4a29" stroke-width="2"/><path d="M2.5 2.5l6 6" stroke="#1d2215" stroke-width="2.4" stroke-linecap="round"/></g>
             <text x="17" y="64" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="3.4" fill="#1d2215">Поиск</text>
-            <text x="17" y="68.5" text-anchor="middle" font-family="PT Sans, sans-serif" font-size="2.6" fill="#5c5a46">места повреждения</text>
+            <text x="17" y="68.5" text-anchor="middle" font-family="PT Sans, sans-serif" font-size="2.6" fill="#5c5a46">штатными КИП</text>
           </g><path d="M120.0 39 h5" stroke="#a3231a" stroke-width="1" marker-end="url(#arr)"/><g transform="translate(126.5 0)">
             <rect x="0" y="22" width="34" height="34" fill="#e7e0c9" stroke="#1d2215" stroke-width=".6"/>
             <rect x="0" y="22" width="34" height="6.5" fill="#1d2215"/>
             <text x="3" y="26.8" font-family="PT Mono, monospace" font-size="3.2" fill="#c9a227" font-weight="700">04</text>
             <g transform="translate(17 40)"><path d="M-10 0h7M3 0h7" stroke="#1d2215" stroke-width="2"/><rect x="-3" y="-3" width="6" height="6" fill="#a3231a"/><path d="M-6 -6l12 12M6 -6l-12 12" stroke="#c9a227" stroke-width="1.2" opacity=".0"/></g>
             <text x="17" y="64" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="3.4" fill="#1d2215">Восстановление</text>
-            <text x="17" y="68.5" text-anchor="middle" font-family="PT Sans, sans-serif" font-size="2.6" fill="#5c5a46">линии / аппаратуры</text>
+            <text x="17" y="68.5" text-anchor="middle" font-family="PT Sans, sans-serif" font-size="2.6" fill="#5c5a46">замена оборудования</text>
           </g><path d="M161.5 39 h5" stroke="#a3231a" stroke-width="1" marker-end="url(#arr)"/><g transform="translate(168.0 0)">
             <rect x="0" y="22" width="34" height="34" fill="#e7e0c9" stroke="#1d2215" stroke-width=".6"/>
             <rect x="0" y="22" width="34" height="6.5" fill="#1d2215"/>
             <text x="3" y="26.8" font-family="PT Mono, monospace" font-size="3.2" fill="#c9a227" font-weight="700">05</text>
             <g transform="translate(17 40)"><path d="M-9 0h18" stroke="#1d2215" stroke-width="2"/><path d="M-6 -6a8 8 0 0 1 12 0" fill="none" stroke="#3c4a29" stroke-width="1.6"/><path d="m-3 4 2.5 2.5 5-5" fill="none" stroke="#3c4a29" stroke-width="2"/></g>
-            <text x="17" y="64" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="3.4" fill="#1d2215">Проверка</text>
-            <text x="17" y="68.5" text-anchor="middle" font-family="PT Sans, sans-serif" font-size="2.6" fill="#5c5a46">качества канала</text>
+            <text x="17" y="64" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="3.4" fill="#1d2215">Испытания</text>
+            <text x="17" y="68.5" text-anchor="middle" font-family="PT Sans, sans-serif" font-size="2.6" fill="#5c5a46">регулировка, настройка</text>
           </g><path d="M203.0 39 h5" stroke="#a3231a" stroke-width="1" marker-end="url(#arr)"/><g transform="translate(209.5 0)">
             <rect x="0" y="22" width="34" height="34" fill="#e7e0c9" stroke="#1d2215" stroke-width=".6"/>
             <rect x="0" y="22" width="34" height="6.5" fill="#1d2215"/>
             <text x="3" y="26.8" font-family="PT Mono, monospace" font-size="3.2" fill="#c9a227" font-weight="700">06</text>
             <g transform="translate(17 40)"><path d="M-7 -8h14v16H-7Z" fill="#e7e0c9" stroke="#1d2215" stroke-width="1.2"/><path d="M-4 -3h8M-4 1h8M-4 5h5" stroke="#a3231a" stroke-width="1.3"/></g>
-            <text x="17" y="64" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="3.4" fill="#1d2215">Доклад</text>
-            <text x="17" y="68.5" text-anchor="middle" font-family="PT Sans, sans-serif" font-size="2.6" fill="#5c5a46">о выполнении</text>
+            <text x="17" y="64" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="3.4" fill="#1d2215">Акт</text>
+            <text x="17" y="68.5" text-anchor="middle" font-family="PT Sans, sans-serif" font-size="2.6" fill="#5c5a46">ввод в штатный режим</text>
           </g>
         </svg>
-        <div class="caption">При нарушении связи АВК по команде выдвигается к месту повреждения, восстанавливает связь и докладывает о выполнении задачи</div>
+        <div class="caption">АВК привлекается, когда аварию, повреждение или неисправность невозможно устранить силами боевого расчёта</div>
       </div>
     </div>
 <div class="block red">
-      <div class="bh"><span class="no">РИС. 2</span>Типовые повреждения и способы восстановления</div>
-      <div class="sol">
-        <div><svg viewBox="0 0 40 40"><path d="M3 20h13M24 20h13" stroke="#1d2215" stroke-width="3"/><path d="M16 14l4 6-4 6M24 14l-4 6 4 6" fill="none" stroke="#a3231a" stroke-width="2.4"/></svg>
-          <div><h4>Обрыв кабеля</h4><p>Сращивание, вставка кабеля, обходная линия</p></div></div>
-        <div><svg viewBox="0 0 40 40"><path d="M4 20h32" stroke="#1d2215" stroke-width="3"/><circle cx="20" cy="20" r="7" fill="none" stroke="#a3231a" stroke-width="2.4"/><path d="M20 13v14" stroke="#a3231a" stroke-width="2"/></svg>
-          <div><h4>Снижение изоляции</h4><p>Поиск места измерениями, вырезка участка</p></div></div>
-        <div><svg viewBox="0 0 40 40"><path d="M20 36V6M14 12l6-6 6 6" fill="none" stroke="#1d2215" stroke-width="3"/><path d="M8 28l24-14" stroke="#a3231a" stroke-width="3"/></svg>
-          <div><h4>Повреждение антенны</h4><p>Замена элементов, развёртывание запасной</p></div></div>
-        <div><svg viewBox="0 0 40 40"><rect x="7" y="10" width="26" height="20" rx="2" fill="#3c4a29"/><path d="M12 15l16 10M28 15 12 25" stroke="#a3231a" stroke-width="2.6"/></svg>
-          <div><h4>Отказ аппаратуры</h4><p>Замена блока из ЗИП или комплекта</p></div></div>
-        <div><svg viewBox="0 0 40 40"><path d="M22 4 10 22h8l-2 14 12-18h-8Z" fill="#c9a227" stroke="#1d2215" stroke-width="1.2"/></svg>
-          <div><h4>Пропадание питания</h4><p>Переход на резервный источник, АКБ, агрегат</p></div></div>
-        <div><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="14" fill="none" stroke="#1d2215" stroke-width="2.4"/><path d="M8 20h24M20 6c5 5 5 23 0 28M20 6c-5 5-5 23 0 28" fill="none" stroke="#3c4a29" stroke-width="1.8"/></svg>
-          <div><h4>Разрушение узла</h4><p>Организация связи по обходным направлениям</p></div></div>
+      <div class="bh"><span class="no">02</span>Время прибытия АВК (мирное время)</div>
+      <div class="bb">
+        <div class="tiles">
+          <div class="tile"><div class="big">1 <small>ЧАС</small></div><p>В рабочее время</p></div>
+          <div class="tile d"><div class="big">1 <small>Ч</small> 30 <small>МИН</small></div><p>Во внеслужебное время</p></div>
+        </div>
+        <div class="meet"><svg viewBox="0 0 40 40"><path d="M20 3c-7 0-12 5-12 12 0 9 12 22 12 22s12-13 12-22c0-7-5-12-12-12Z" fill="#a3231a"/><circle cx="20" cy="15" r="4.5" fill="#e7e0c9"/></svg>
+          <div><b>Место сбора АВК</b> — место развода боевых расчётов (дежурных смен) для несения боевого дежурства.</div></div>
+        <div class="meet"><svg viewBox="0 0 40 40"><rect x="5" y="12" width="30" height="20" rx="1.5" fill="#3c4a29"/><rect x="15" y="8" width="10" height="5" fill="none" stroke="#1d2215" stroke-width="2"/><path d="M5 20h30" stroke="#c9a227" stroke-width="2"/></svg>
+          <div>Инструменты и материалы (<b>ремкомплекты, ЗИП</b>) — в специально оборудованных ящиках, в готовности к доставке к месту сбора.</div></div>
       </div>
+    </div>
+<div class="block red">
+      <div class="bh"><span class="no">05</span>Акт и подготовка АВК</div>
+      <div class="rules"><div class="yes"><ol>
+        <li>По результатам работ составляется <b>акт</b>: перечень снятого и установленного оборудования, использованных материальных средств</li>
+        <li>Акт оформляет начальник АВК, утверждает командир части</li>
+        <li>Основной метод подготовки — <b>самостоятельная подготовка</b></li>
+        <li>Практические действия отрабатываются на тренировках по боевой готовности и учебно-методических занятиях</li>
+      </ol></div></div>
     </div>
       </div>
       <div class="colm">
 <div class="block">
       <div class="bh"><span class="no">01</span>Задачи АВК</div>
       <div class="bb">
+        <div class="task">АВК узла связи и передачи информации предназначена для <b>ликвидации аварий, повреждений и неисправностей</b> на аппаратуре и средствах связи, если их невозможно устранить силами боевого расчёта.</div>
         <ul class="threats">
-          <li><svg viewBox="0 0 40 40"><path d="M4 28c6-14 10-14 16 0s10 14 16 0" fill="none" stroke="#3c4a29" stroke-width="3"/><rect x="16" y="14" width="8" height="8" fill="#a3231a"/></svg>
-            <div><b>Восстановление линий</b>Устранение повреждений кабельных и проводных линий</div></li>
+          <li><svg viewBox="0 0 40 40"><circle cx="17" cy="17" r="11" fill="none" stroke="#3c4a29" stroke-width="3.5"/><path d="M25 25l10 10" stroke="#1d2215" stroke-width="4" stroke-linecap="round"/></svg>
+            <div><b>Выявление повреждений</b>Поиск мест повреждений (разрушений) штатными контрольно-измерительными приборами и их своевременное устранение</div></li>
           <li><svg viewBox="0 0 40 40"><rect x="7" y="10" width="26" height="22" rx="2" fill="#3c4a29"/><path d="M13 21h14M20 15v12" stroke="#c9a227" stroke-width="3"/></svg>
-            <div><b>Восстановление аппаратуры</b>Замена и ремонт вышедших из строя средств связи</div></li>
-          <li><svg viewBox="0 0 40 40"><path d="M20 4v26M12 12l8-8 8 8" fill="none" stroke="#1d2215" stroke-width="3"/><path d="M8 34h24" stroke="#3c4a29" stroke-width="3"/></svg>
-            <div><b>Восстановление антенн</b>Развёртывание и подъём антенно-мачтовых устройств</div></li>
-          <li><svg viewBox="0 0 40 40"><path d="M4 20h10l4-8 4 16 4-8h10" fill="none" stroke="#a3231a" stroke-width="3" stroke-linejoin="round"/></svg>
-            <div><b>Обходные каналы</b>Организация резервных и обходных направлений</div></li>
-          <li><svg viewBox="0 0 40 40"><path d="M20 4 6 9v10c0 9 6 14 14 17 8-3 14-8 14-17V9Z" fill="#3c4a29"/><path d="m13 20 5 5 9-10" fill="none" stroke="#c9a227" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <div><b>Поддержание готовности</b>Техника, имущество и личный состав — в постоянной готовности</div></li>
+            <div><b>Устранение сложных аварий</b>Монтажные и ремонтно-восстановительные работы, замена неисправного оборудования</div></li>
+          <li><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="14" fill="none" stroke="#1d2215" stroke-width="2.6"/><path d="M20 20 L28 12" stroke="#a3231a" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="#1d2215"/></svg>
+            <div><b>Регулировка и испытания</b>Настройка и испытания техники связи после ремонта по инструкциям и правилам технической эксплуатации</div></li>
         </ul>
       </div>
     </div>
 <div class="block">
-      <div class="bh"><span class="no">02</span>Состав и оснащение</div>
+      <div class="bh"><span class="no">03</span>Состав АВК</div>
       <div class="bb">
         <table class="units">
-          <tr><td class="k" style="width:9mm;">1</td><td class="v">Начальник АВК</td></tr>
-          <tr><td class="k" style="width:9mm;">2</td><td class="v">Линейные надсмотрщики, кабельщики-спайщики</td></tr>
-          <tr><td class="k" style="width:9mm;">3</td><td class="v">Мастера по ремонту средств связи</td></tr>
-          <tr><td class="k" style="width:9mm;">4</td><td class="v">Водитель, автомобиль с имуществом</td></tr>
-          <tr><td class="k" style="width:9mm;">5</td><td class="v">Запас кабеля, ЗИП, инструмент, измерительные приборы</td></tr>
-          <tr><td class="k" style="width:9mm;">6</td><td class="v">Средства связи для доклада и связи с КП</td></tr>
+          <tr><td class="k" style="width:9mm;">1</td><td class="v"><b>Начальник АВК</b> — начальник УС и ПИ (заместитель по технической части либо офицер УС и ПИ)</td></tr>
+          <tr><td class="k" style="width:9mm;">2</td><td class="v"><b>Техник</b> — военнослужащий УС и ПИ</td></tr>
         </table>
-        <div class="note" style="font-size:9pt;color:var(--muted);font-style:italic;margin-top:1.6mm;">Состав определяется приказом командира части.</div>
+        <div class="sub2">Привлекаются дополнительно</div>
+        <table class="units">
+          <tr><td class="k" style="width:9mm;">+</td><td class="v">Решением заместителя командира по вооружению — личный состав, силы и средства части, подрядные организации, специалисты промышленности</td></tr>
+          <tr><td class="k" style="width:9mm;">+</td><td class="v">Решением командира подразделения — личный состав подразделения</td></tr>
+          <tr><td class="k" style="width:9mm;">+</td><td class="v">Автомобильная техника — по решению командира части</td></tr>
+        </table>
       </div>
     </div>
       </div>
       <div class="colm">
-<div class="block red">
-      <div class="bh"><span class="no">03</span>Требования безопасности</div>
-      <div class="rules">
-        <div class="no">
-          <h3>ЗАПРЕЩАЕТСЯ:</h3>
-          <ol>
-            <li>Работать на линии без разрешения дежурного и средств защиты</li>
-            <li>Производить работы под напряжением и во время грозы</li>
-            <li>Работать на высоте без страховки</li>
-            <li>Выдвигаться без связи с командным пунктом</li>
-          </ol>
-        </div>
-        <div class="yes">
-          <h3>ОБЯЗАН:</h3>
-          <ol>
-            <li>Знать маршруты линий и порядок выдвижения</li>
-            <li>Проверять имущество и технику при заступлении</li>
-            <li>Соблюдать маскировку на месте работ</li>
-            <li>Доложить о восстановлении связи немедленно</li>
-          </ol>
-        </div>
+<div class="block">
+      <div class="bh"><span class="no">04</span>Контроль готовности АВК</div>
+      <div class="bb">
+        <table class="ctrl">
+          <tr><td>Командиры подразделений</td><td class="f">еженедельно</td></tr>
+          <tr><td>Заместитель командира части по вооружению</td><td class="f">ежемесячно</td></tr>
+          <tr><td>Руководящий состав части</td><td class="f">по план-графику</td></tr>
+        </table>
+        <div class="task" style="margin-top:3mm;margin-bottom:0;">За боевую готовность сил и средств АВК, укомплектованность инструментом и материалами, исправность техники отвечает <b>начальник УС и ПИ</b>.</div>
       </div>
+    </div>
+<div class="block red">
+      <div class="bh"><span class="no">06</span>Требования безопасности</div>
+      <div class="rules"><div class="no"><h3>ЗАПРЕЩАЕТСЯ:</h3><ol>
+        <li>Проводить работы без допуска и инструктажа</li>
+        <li>Вскрывать аппаратуру под напряжением</li>
+        <li>Работать на высоте без страховки, во время грозы</li>
+      </ol></div><div class="yes"><h3>ОБЯЗАН:</h3><ol>
+        <li>Соблюдать требования безопасной эксплуатации электроустановок</li>
+        <li>Проверять заземление перед включением техники</li>
+        <li>Доложить о вводе техники в штатный режим немедленно</li>
+      </ol></div></div>
     </div>
       </div>
     </div>
